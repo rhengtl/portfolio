@@ -1,0 +1,113 @@
+---
+/** Featured card for projects 4–6 (PORTFOLIO_SPEC §11.4): text only, same evidence rules. */
+import Icon from './Icon.astro';
+import TagList from './TagList.astro';
+import { evidenceLinks, projectAnchor, projectLabel, type Project } from '@/lib/projects';
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const { data } = project;
+const headingId = `${projectAnchor(project.id)}-title`;
+const metric = data.metrics[0];
+const metricText = metric ? [metric.label, metric.context].filter(Boolean).join(' — ') : '';
+const links = evidenceLinks(project);
+---
+
+<article class="card" id={projectAnchor(project.id)} aria-labelledby={headingId}>
+  <p class="label">{projectLabel(project)}</p>
+  <h3 id={headingId}>{data.title}</h3>
+  <p class="card__tagline">{data.tagline}</p>
+  <p class="card__summary">{data.summary}</p>
+  {
+    metric && (
+      <p class="card__metric">
+        <span class="card__metric-value tabular">{metric.value}</span>
+        <span>{metricText}</span>
+      </p>
+    )
+  }
+  <TagList items={data.stack} label={`${data.title} technologies`} />
+  <ul class="card__links" aria-label={`${data.title} links`}>
+    {
+      links.map((link) => (
+        <li>
+          <a href={link.href}>
+            {link.label}
+            <Icon name="external" size={14} />
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</article>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border: var(--hairline);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    transition:
+      border-color var(--duration) var(--ease),
+      transform var(--duration) var(--ease);
+  }
+
+  @media (hover: hover) {
+    .card:hover {
+      border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+    }
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .card:hover {
+      transform: translateY(-2px);
+    }
+  }
+
+  .card__tagline {
+    font-weight: 500;
+  }
+
+  .card__summary {
+    color: var(--muted);
+    font-size: var(--text-small);
+  }
+
+  .card__metric {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2);
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+
+  .card__metric-value {
+    font-family: var(--font-code);
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .card__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-5);
+    margin-top: auto;
+    list-style: none;
+  }
+
+  .card__links a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: 44px;
+    font-weight: 500;
+    font-size: var(--text-small);
+  }
+</style>

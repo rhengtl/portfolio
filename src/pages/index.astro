@@ -1,7 +1,19 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Hero from '@/components/Hero.astro';
+import Section from '@/components/Section.astro';
+import ProjectFlagship from '@/components/ProjectFlagship.astro';
+import ProjectCard from '@/components/ProjectCard.astro';
+import ExperienceList from '@/components/ExperienceList.astro';
+import SkillsGrid from '@/components/SkillsGrid.astro';
+import AboutSection from '@/components/AboutSection.astro';
+import ContactSection from '@/components/ContactSection.astro';
 import { site } from '@/data/site';
+import { getProjects } from '@/lib/projects';
+
+const projects = await getProjects();
+const flagships = projects.filter((p) => p.data.tier === 'flagship');
+const featured = projects.filter((p) => p.data.tier === 'featured');
 
 // JSON-LD Person (PORTFOLIO_SPEC §22). sameAs lists only profiles that exist.
 const personJsonLd = {
@@ -22,4 +34,63 @@ const personJsonLd = {
 
 <BaseLayout type="profile" jsonLd={personJsonLd}>
   <Hero />
+
+  <Section id="projects" label="Selected work" title="Projects" class="projects-section">
+    <div class="flagships">
+      {flagships.map((project) => <ProjectFlagship project={project} />)}
+    </div>
+    <h3 class="label more-heading">More projects</h3>
+    <div class="cards">
+      {featured.map((project) => <ProjectCard project={project} />)}
+    </div>
+  </Section>
+
+  <Section id="experience" label="Internships" title="Experience">
+    <ExperienceList />
+  </Section>
+
+  <Section id="skills" label="Toolbox" title="Skills">
+    <SkillsGrid />
+  </Section>
+
+  <Section id="about" label="About & education" title="About">
+    <AboutSection />
+  </Section>
+
+  <Section id="contact" label="Get in touch" title="Contact">
+    <ContactSection />
+  </Section>
 </BaseLayout>
+
+<style>
+  /* The first section after the hero starts closer so the first project is visible sooner. */
+  :global(section.section.projects-section) {
+    padding-top: var(--space-7);
+  }
+
+  .flagships {
+    display: grid;
+    gap: var(--space-9);
+  }
+
+  .more-heading {
+    margin: var(--space-9) 0 var(--space-4);
+  }
+
+  .cards {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  @media (min-width: 40rem) {
+    .cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .cards {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

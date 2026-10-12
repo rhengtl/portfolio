@@ -1,0 +1,132 @@
+---
+/**
+ * Core Stack + grouped technical skills with evidence links (PORTFOLIO_SPEC §12).
+ * No logos, bars or ratings.
+ */
+import { site, skillGroups } from '@/data/site';
+import { projectAnchor } from '@/lib/projects';
+import { getCollection } from 'astro:content';
+
+const projects = await getCollection('projects');
+const titles = new Map(projects.map((p) => [p.id, p.data.title]));
+---
+
+<div class="core">
+  <h3 class="label">Core stack</h3>
+  <ul class="core__list">
+    {site.coreStack.map((item) => <li>{item}</li>)}
+  </ul>
+</div>
+
+<div class="groups">
+  {
+    skillGroups.map((group) => (
+      <section class:list={['group', { 'group--secondary': group.secondary }]}>
+        <h3 class="group__title">{group.title}</h3>
+        <ul class="group__items">
+          {group.items.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+        {group.usedIn && (
+          <div class="group__evidence">
+            <span class="label">Used in</span>
+            <ul class="group__used-in">
+              {group.usedIn.map((id) => (
+                <li><a href={`/#${projectAnchor(id)}`}>{titles.get(id) ?? id}</a></li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {group.note && <p class="group__evidence">{group.note}</p>}
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .core {
+    display: grid;
+    gap: var(--space-3);
+    margin-bottom: var(--space-7);
+  }
+
+  .core__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+  }
+
+  .core__list li {
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--text);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-code);
+    font-size: var(--text-small);
+    font-weight: 500;
+  }
+
+  .groups {
+    display: grid;
+    gap: var(--space-6) var(--space-6);
+  }
+
+  @media (min-width: 40rem) {
+    .groups {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .groups {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .group {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+    padding-top: var(--space-3);
+    border-top: var(--hairline);
+  }
+
+  .group__title {
+    font-size: 1rem;
+  }
+
+  .group__items {
+    display: grid;
+    gap: var(--space-1);
+    list-style: none;
+    font-size: var(--text-small);
+  }
+
+  .group__evidence {
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+
+  div.group__evidence {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+
+  .group__used-in {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+  }
+
+  /* Separator belongs to the item, so wrapped lines never start with a comma. */
+  .group__used-in li:not(:last-child)::after {
+    content: ',\00a0' / '';
+  }
+
+  .group--secondary .group__items {
+    color: var(--muted);
+  }
+</style>

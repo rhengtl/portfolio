@@ -1,0 +1,176 @@
+---
+/**
+ * About & Education (PORTFOLIO_SPEC §9.1 row 6, §14).
+ * The headshot renders only once src/assets/headshot.(jpg|jpeg|png|webp) exists.
+ */
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { about, activities, credentials, site } from '@/data/site';
+import Icon from './Icon.astro';
+
+const headshots = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/headshot.{jpg,jpeg,png,webp}',
+  { eager: true },
+);
+const headshot = Object.values(headshots)[0]?.default;
+const { education } = site;
+
+// Built as strings so template line breaks can't add stray spaces before punctuation.
+const credentialMeta = (c: (typeof credentials)[number]) =>
+  ` — ${c.issuer}${c.kind ? `, ${c.kind.toLowerCase()}` : ''} (${c.year})`;
+---
+
+<div class="about">
+  <div class="about__intro">
+    {
+      headshot && (
+        <Picture
+          src={headshot}
+          alt={`Portrait of ${site.name}`}
+          formats={['avif', 'webp']}
+          width={320}
+          height={320}
+          fit="cover"
+          class="about__photo"
+        />
+      )
+    }
+    <div class="about__text prose">
+      {about.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+    </div>
+  </div>
+
+  <div class="about__columns">
+    <section aria-labelledby="education-heading">
+      <h3 id="education-heading" class="label">Education</h3>
+      <p class="about__degree">
+        {education.degree} <span class="about__muted">({education.specialization})</span>
+      </p>
+      <p>{education.school}, {education.location}</p>
+      <p class="about__muted">
+        Graduated {education.graduated} · {education.honors}
+      </p>
+      <p class="about__thesis">
+        <span class="label">Thesis</span>
+        <a href={about.thesis.href}>{about.thesis.title}<Icon name="external" size={14} /></a>
+        <span class="about__muted">{about.thesis.note}</span>
+      </p>
+    </section>
+
+    <section aria-labelledby="credentials-heading">
+      <h3 id="credentials-heading" class="label">Certifications</h3>
+      <ul class="about__credentials">
+        {
+          credentials.map((c) => (
+            <li>
+              {c.href ? <a href={c.href}>{c.name}</a> : <span class="about__credential-name">{c.name}</span>}<span class="about__muted">{credentialMeta(c)}</span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <h3 class="label about__activities-heading">Activities</h3>
+      <ul class="about__credentials">
+        {activities.map((a) => <li>{a}</li>)}
+      </ul>
+    </section>
+  </div>
+</div>
+
+<style>
+  .about {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .about__intro {
+    display: grid;
+    gap: var(--space-5);
+    align-items: start;
+  }
+
+  .about__intro :global(.about__photo) {
+    width: 120px;
+    height: 120px;
+    border-radius: var(--radius-md);
+    border: var(--hairline);
+    object-fit: cover;
+  }
+
+  .about__text {
+    display: grid;
+    gap: var(--space-4);
+    font-size: var(--text-lead);
+    line-height: 1.55;
+  }
+
+  .about__columns {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .about__columns section {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+  }
+
+  .about__degree {
+    font-weight: 600;
+  }
+
+  .about__muted {
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  .about__thesis {
+    display: grid;
+    gap: var(--space-1);
+    margin-top: var(--space-3);
+  }
+
+  .about__thesis a {
+    font-weight: 500;
+  }
+
+  .about__thesis :global(svg) {
+    display: inline;
+    vertical-align: -0.1em;
+    margin-left: 0.2em;
+  }
+
+  .about__credentials {
+    display: grid;
+    gap: var(--space-2);
+    list-style: none;
+    font-size: var(--text-small);
+  }
+
+  .about__credential-name {
+    font-weight: 500;
+  }
+
+  .about__activities-heading {
+    margin-top: var(--space-4);
+  }
+
+  @media (min-width: 40rem) {
+    .about__intro :global(.about__photo) {
+      width: 160px;
+      height: 160px;
+    }
+
+    .about__intro:has(:global(.about__photo)) {
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: var(--space-6);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .about__columns {
+      grid-template-columns: 5fr 7fr;
+      column-gap: var(--space-7);
+    }
+  }
+</style>

@@ -1,0 +1,84 @@
+---
+/** Experience timeline (PORTFOLIO_SPEC §13). Dates sit in a left column on desktop. */
+import { experience, experienceIntro } from '@/data/site';
+---
+
+<p class="experience__intro prose">{experienceIntro}</p>
+
+<ol class="experience">
+  {
+    experience.map((entry) => (
+      <li class="experience__item">
+        <p class="experience__period label tabular">{entry.period}</p>
+        <div class="experience__body">
+          <h3 class="experience__role">{entry.role}</h3>
+          <p class="experience__org">
+            {entry.org}
+            {entry.orgNote && <span class="experience__org-note"> ({entry.orgNote})</span>}
+          </p>
+          <ul class="experience__bullets">
+            {entry.bullets.map((bullet) => (
+              <li>{bullet}</li>
+            ))}
+          </ul>
+        </div>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .experience__intro {
+    margin-bottom: var(--space-6);
+    color: var(--muted);
+    font-size: var(--text-lead);
+    line-height: 1.5;
+  }
+
+  .experience {
+    display: grid;
+    gap: var(--space-6);
+    list-style: none;
+  }
+
+  .experience__item {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .experience__body {
+    display: grid;
+    gap: var(--space-2);
+    max-width: var(--measure);
+  }
+
+  .experience__role {
+    font-size: var(--text-h3);
+  }
+
+  .experience__org {
+    color: var(--muted);
+  }
+
+  .experience__bullets {
+    display: grid;
+    gap: var(--space-2);
+    padding-left: 1.1em;
+    list-style: disc;
+  }
+
+  .experience__bullets li::marker {
+    color: var(--muted);
+  }
+
+  @media (min-width: 64rem) {
+    .experience__item {
+      grid-template-columns: 8rem minmax(0, 1fr);
+      column-gap: var(--space-6);
+    }
+
+    .experience__period {
+      padding-top: 0.35em;
+    }
+  }
+</style>

@@ -13,7 +13,7 @@ import ThemeToggle from './ThemeToggle.astro';
 
 <header class="site-header" data-site-header>
   <div class="container site-header__inner">
-    <a href="/" class="site-header__brand" aria-label={`${site.name}, home`}>
+    <a href="/" class="site-header__brand">
       <span class="site-header__monogram" aria-hidden="true">{site.shortName}</span>
       <span class="site-header__name">{site.name}</span>
     </a>
@@ -107,14 +107,19 @@ import ThemeToggle from './ThemeToggle.astro';
     }
 
     if (links.size > 0 && 'IntersectionObserver' in window) {
+      // Track which sections cross the band; highlight the first one, or none (e.g. on the hero).
+      const inBand = new Set<string>();
+      const ids = [...links.keys()];
       const observer = new IntersectionObserver(
         (entries) => {
           for (const entry of entries) {
-            if (!entry.isIntersecting) continue;
-            for (const [id, link] of links) {
-              if (id === entry.target.id) link.setAttribute('aria-current', 'true');
-              else link.removeAttribute('aria-current');
-            }
+            if (entry.isIntersecting) inBand.add(entry.target.id);
+            else inBand.delete(entry.target.id);
+          }
+          const current = ids.find((id) => inBand.has(id));
+          for (const [id, link] of links) {
+            if (id === current) link.setAttribute('aria-current', 'true');
+            else link.removeAttribute('aria-current');
           }
         },
         { rootMargin: '-40% 0px -55% 0px' },
@@ -177,8 +182,14 @@ import ThemeToggle from './ThemeToggle.astro';
     letter-spacing: 0.04em;
   }
 
+  /* Visually hidden below desktop (not display:none) so the link keeps "Rhenier Gustilo" as its name. */
   .site-header__name {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
   }
 
   .site-header__nav ul {
@@ -305,7 +316,11 @@ import ThemeToggle from './ThemeToggle.astro';
 
   @media (min-width: 64rem) {
     .site-header__name {
-      display: inline;
+      position: static;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      clip: auto;
     }
   }
 </style>

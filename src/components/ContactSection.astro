@@ -1,0 +1,70 @@
+---
+import { contact, site, socials } from '@/data/site';
+import { hasResume } from '@/lib/resume';
+import CopyEmail from './CopyEmail.astro';
+import Icon from './Icon.astro';
+
+const profiles = socials.filter((s) => s.icon !== 'mail');
+---
+
+<div class="contact">
+  <p class="contact__lead prose">{contact.lead}</p>
+  <CopyEmail />
+  <ul class="contact__links" aria-label="Other ways to reach me">
+    {
+      profiles.map((link) => (
+        <li>
+          <a href={link.href} rel="me">
+            <Icon name={link.icon} size={18} />
+            {link.label}
+          </a>
+        </li>
+      ))
+    }
+    {
+      hasResume && (
+        <li>
+          <a href={site.resumePath} target="_blank" rel="noopener noreferrer">
+            <Icon name="file" size={18} />
+            Résumé (PDF)<span class="visually-hidden">, opens in new tab</span>
+          </a>
+        </li>
+      )
+    }
+  </ul>
+</div>
+
+<style>
+  .contact {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .contact__lead {
+    font-size: var(--text-lead);
+    line-height: 1.5;
+  }
+
+  .contact__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    list-style: none;
+  }
+
+  .contact__links a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    color: var(--text);
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  @media (hover: hover) {
+    .contact__links a:hover {
+      color: var(--accent);
+    }
+  }
+</style>

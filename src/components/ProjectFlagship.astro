@@ -1,0 +1,238 @@
+---
+/**
+ * Large project block for flagships (PORTFOLIO_SPEC §11.2, §20).
+ * Mobile order: label → title → one-liner → media → summary → results → tags → links.
+ * Desktop: text (5/12) beside media (7/12), always on the same side.
+ */
+import { Picture } from 'astro:assets';
+import Icon from './Icon.astro';
+import TagList from './TagList.astro';
+import {
+  evidenceLinks,
+  hasCaseStudy,
+  projectAnchor,
+  projectLabel,
+  type Project,
+} from '@/lib/projects';
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const { data } = project;
+const headingId = `${projectAnchor(project.id)}-title`;
+const caseStudy = hasCaseStudy(project);
+const links = evidenceLinks(project);
+---
+
+<article class="flagship" id={projectAnchor(project.id)} aria-labelledby={headingId}>
+  <p class="label flagship__label">{projectLabel(project)}</p>
+  <h3 class="flagship__title" id={headingId}>{data.title}</h3>
+  <p class="flagship__tagline">{data.tagline}</p>
+
+  {
+    data.cover && data.coverAlt && (
+      <figure class="flagship__media">
+        <Picture
+          src={data.cover}
+          alt={data.coverAlt}
+          formats={['avif', 'webp']}
+          layout="constrained"
+          width={800}
+          height={500}
+          sizes="(min-width: 70rem) 640px, (min-width: 64rem) 56vw, calc(100vw - 2rem)"
+          fit="cover"
+          quality={70}
+        />
+      </figure>
+    )
+  }
+
+  <p class="flagship__summary">{data.summary}</p>
+
+  {
+    data.metrics.length > 0 && (
+      <dl class="flagship__metrics">
+        {data.metrics.map((metric) => (
+          <div>
+            <dt class="label">{metric.label}</dt>
+            <dd>
+              <span class="flagship__metric-value tabular">{metric.value}</span>
+              {metric.context && <span class="flagship__metric-context">{metric.context}</span>}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    )
+  }
+
+  <p class="flagship__role"><span class="label">Role</span> {data.role}</p>
+
+  <div class="flagship__tags">
+    <TagList items={data.stack} label={`${data.title} technologies`} />
+  </div>
+
+  <ul class="flagship__links" aria-label={`${data.title} links`}>
+    {
+      caseStudy && (
+        <li>
+          <a href={`/projects/${project.id}`} class="flagship__primary">
+            Read case study <Icon name="arrow-right" size={16} />
+          </a>
+        </li>
+      )
+    }
+    {
+      links.map((link) => (
+        <li>
+          <a href={link.href}>
+            {link.label}
+            <Icon name="external" size={14} />
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</article>
+
+<style>
+  .flagship {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: start;
+  }
+
+  .flagship__title {
+    font-size: var(--text-h2);
+  }
+
+  .flagship__tagline {
+    font-size: var(--text-lead);
+    line-height: 1.5;
+  }
+
+  .flagship__media {
+    margin: var(--space-2) 0;
+    overflow: hidden;
+    border: var(--hairline);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    aspect-ratio: 16 / 10;
+  }
+
+  .flagship__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .flagship__summary {
+    color: var(--muted);
+  }
+
+  .flagship__metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4) var(--space-6);
+    margin: var(--space-2) 0;
+  }
+
+  .flagship__metrics div {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .flagship__metrics dd {
+    display: grid;
+    margin: 0;
+  }
+
+  .flagship__metric-value {
+    font-family: var(--font-code);
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--accent);
+    line-height: 1.3;
+  }
+
+  .flagship__metric-context {
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+
+  .flagship__role {
+    font-size: var(--text-small);
+  }
+
+  .flagship__role .label {
+    margin-right: var(--space-2);
+  }
+
+  .flagship__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-5);
+    list-style: none;
+  }
+
+  .flagship__links a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: 44px;
+    font-weight: 500;
+    font-size: var(--text-small);
+  }
+
+  .flagship__primary {
+    color: var(--accent);
+  }
+
+  @media (min-width: 64rem) {
+    .flagship {
+      grid-template-columns: 5fr 7fr;
+      column-gap: var(--space-7);
+      grid-template-areas:
+        'label media'
+        'title media'
+        'tagline media'
+        'summary media'
+        'metrics media'
+        'role media'
+        'tags media'
+        'links media'
+        '. media';
+    }
+
+    .flagship__label {
+      grid-area: label;
+    }
+    .flagship__title {
+      grid-area: title;
+    }
+    .flagship__tagline {
+      grid-area: tagline;
+    }
+    .flagship__media {
+      grid-area: media;
+      margin: 0;
+    }
+    .flagship__summary {
+      grid-area: summary;
+    }
+    .flagship__metrics {
+      grid-area: metrics;
+    }
+    .flagship__role {
+      grid-area: role;
+    }
+    .flagship__tags {
+      grid-area: tags;
+    }
+    .flagship__links {
+      grid-area: links;
+    }
+  }
+</style>
