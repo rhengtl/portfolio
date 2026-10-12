@@ -1,0 +1,35 @@
+---
+/** A home-page section with a hairline rule, a mono label and an h2 (PORTFOLIO_SPEC §15.5). */
+interface Props {
+  id: string;
+  label?: string;
+  title: string;
+  class?: string;
+}
+
+const { id, label, title, class: className } = Astro.props;
+const headingId = `${id}-heading`;
+---
+
+<section id={id} aria-labelledby={headingId} class:list={['section', className]}>
+  <div class="container">
+    <header class="section__header">
+      {label && <p class="label">{label}</p>}
+      <h2 id={headingId}>{title}</h2>
+    </header>
+    <slot />
+  </div>
+</section>
+
+<style>
+  .section {
+    padding-block: var(--section-gap);
+    border-top: var(--hairline);
+  }
+
+  .section__header {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+  }
+</style>

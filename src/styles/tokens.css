@@ -1,0 +1,107 @@
+/*
+ * Design tokens — PORTFOLIO_SPEC §15 (layout/spacing), §16 (type), §17 (colour).
+ * Light is the reference theme. Dark applies when the OS prefers it, unless the
+ * visitor chose a theme explicitly (data-theme on <html>, set by ThemeToggle).
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Colour */
+  --bg: #fafaf7;
+  --surface: #ffffff;
+  --text: #17181a;
+  --muted: #5b6068;
+  --border: #e4e4de;
+  --accent: #c2410c;
+  --accent-contrast: #ffffff;
+  --accent-soft: #fff1e8;
+  --focus: var(--accent);
+  --shadow-raised: 0 1px 2px rgb(23 24 26 / 0.06), 0 4px 16px rgb(23 24 26 / 0.06);
+
+  /* Type families (CSS variables are provided by the Astro Fonts API) */
+  --font-body: var(--font-sans), system-ui, sans-serif;
+  --font-code: var(--font-mono), ui-monospace, monospace;
+
+  /* Type scale */
+  --text-display: clamp(2.25rem, 1.6rem + 2.8vw, 3.5rem);
+  --text-h2: clamp(1.5rem, 1.3rem + 0.9vw, 2rem);
+  --text-h3: clamp(1.25rem, 1.2rem + 0.25vw, 1.375rem);
+  --text-lead: clamp(1.125rem, 1.08rem + 0.2vw, 1.25rem);
+  --text-body: clamp(1rem, 0.98rem + 0.1vw, 1.0625rem);
+  --text-small: 0.875rem;
+  --text-label: 0.8125rem;
+  --text-code: 0.875rem;
+
+  /* Spacing (4 px base) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+
+  /* Layout */
+  --container: 70rem; /* 1120 px */
+  --measure: 68ch;
+  --figure-max: 60rem; /* 960 px */
+  --gutter: 1rem;
+  --section-gap: var(--space-8);
+  --header-height: 3.5rem;
+
+  /* Shape */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --hairline: 1px solid var(--border);
+
+  /* Motion */
+  --duration: 150ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+}
+
+@media (min-width: 40rem) {
+  :root {
+    --gutter: 1.5rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --gutter: 2rem;
+    --section-gap: var(--space-9);
+  }
+}
+
+/* Dark theme: OS preference, unless the visitor explicitly chose light. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: #0f1113;
+    --surface: #16191c;
+    --text: #e8e6e1;
+    --muted: #9ba1a8;
+    --border: #2a2e33;
+    --accent: #fb923c;
+    --accent-contrast: #0f1113;
+    --accent-soft: #2a1a10;
+    --shadow-raised: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 16px rgb(0 0 0 / 0.3);
+  }
+}
+
+/* Dark theme: explicit choice. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0f1113;
+  --surface: #16191c;
+  --text: #e8e6e1;
+  --muted: #9ba1a8;
+  --border: #2a2e33;
+  --accent: #fb923c;
+  --accent-contrast: #0f1113;
+  --accent-soft: #2a1a10;
+  --shadow-raised: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 16px rgb(0 0 0 / 0.3);
+}

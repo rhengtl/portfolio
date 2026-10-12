@@ -1,0 +1,25 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/Hero.astro';
+import { site } from '@/data/site';
+
+// JSON-LD Person (PORTFOLIO_SPEC §22). sameAs lists only profiles that exist.
+const personJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  jobTitle: site.title,
+  url: Astro.site?.href,
+  email: `mailto:${site.email}`,
+  sameAs: [site.github, site.kaggle, site.linkedin].filter(Boolean),
+  alumniOf: {
+    '@type': 'CollegeOrUniversity',
+    name: site.education.school,
+  },
+  knowsAbout: site.coreStack,
+};
+---
+
+<BaseLayout type="profile" jsonLd={personJsonLd}>
+  <Hero />
+</BaseLayout>

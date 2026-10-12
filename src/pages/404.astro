@@ -1,0 +1,36 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import LinkButton from '@/components/LinkButton.astro';
+---
+
+<BaseLayout title="Page not found" description="This page doesn't exist." noindex>
+  <section class="not-found" aria-labelledby="not-found-title">
+    <div class="container not-found__inner">
+      <p class="label">Error 404</p>
+      <h1 id="not-found-title">This page doesn't exist.</h1>
+      <p>The link may be outdated, or the address may have a typo.</p>
+      <div class="not-found__actions">
+        <LinkButton href="/" variant="primary">Go to the home page</LinkButton>
+        <LinkButton href="/#projects">See projects</LinkButton>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    padding-block: var(--space-9);
+  }
+
+  .not-found__inner {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .not-found__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+  }
+</style>

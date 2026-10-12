@@ -1,0 +1,159 @@
+---
+/** Home hero (PORTFOLIO_SPEC §9.1 row 2). Text only, so the LCP element is text. */
+import { site, socials } from '@/data/site';
+import { hasResume } from '@/lib/resume';
+import Icon from './Icon.astro';
+import LinkButton from './LinkButton.astro';
+
+const { education } = site;
+---
+
+<section class="hero" aria-labelledby="hero-name">
+  <div class="container hero__inner">
+    <p class="label">{site.title}</p>
+    <h1 id="hero-name">{site.name}</h1>
+    <p class="hero__mission">{site.mission}</p>
+
+    <dl class="hero__facts">
+      <div>
+        <dt class="label">Education</dt>
+        <dd>
+          {education.degree} ({education.specialization}) · {education.school}, {education.location}
+          · {education.graduated} · {education.honors}
+        </dd>
+      </div>
+      <div>
+        <dt class="label">Availability</dt>
+        <dd>{site.availability}</dd>
+      </div>
+      <div>
+        <dt class="label">Core stack</dt>
+        <dd>
+          <ul class="hero__stack">
+            {site.coreStack.map((item) => <li>{item}</li>)}
+          </ul>
+        </dd>
+      </div>
+    </dl>
+
+    <div class="hero__actions">
+      <LinkButton href="/#projects" variant="primary">
+        View projects <Icon name="arrow-right" size={16} />
+      </LinkButton>
+      {
+        hasResume && (
+          <LinkButton href={site.resumePath} target="_blank" rel="noopener noreferrer">
+            <Icon name="file" size={16} />
+            Résumé (PDF)<span class="visually-hidden">, opens in new tab</span>
+          </LinkButton>
+        )
+      }
+    </div>
+
+    <ul class="hero__socials" aria-label="Profiles and contact">
+      {
+        socials.map((link) => (
+          <li>
+            <a href={link.href} rel={link.icon === 'mail' ? undefined : 'me'}>
+              <Icon name={link.icon} label={link.label} />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-block: var(--space-8) var(--space-7);
+  }
+
+  @media (min-width: 64rem) {
+    .hero {
+      padding-block: var(--space-9) var(--space-8);
+    }
+  }
+
+  .hero__inner {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .hero__inner > * {
+    max-width: 45rem;
+  }
+
+  .hero__mission {
+    font-size: var(--text-lead);
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .hero__facts {
+    display: grid;
+    gap: var(--space-3);
+    margin: var(--space-2) 0 0;
+    font-size: var(--text-small);
+  }
+
+  .hero__facts div {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .hero__facts dd {
+    margin: 0;
+  }
+
+  .hero__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.6em;
+    list-style: none;
+    font-family: var(--font-code);
+  }
+
+  /* The separator trails each item, so a wrapped line never starts with "·". */
+  .hero__stack li:not(:last-child)::after {
+    content: '·' / ''; /* empty alt text: screen readers skip the separator */
+    margin-left: 0.6em;
+    color: var(--muted);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+  }
+
+  @media (min-width: 40rem) {
+    .hero__actions {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  }
+
+  .hero__socials {
+    display: flex;
+    gap: var(--space-2);
+    list-style: none;
+  }
+
+  .hero__socials a {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-sm);
+    color: var(--muted);
+    transition: color var(--duration) var(--ease);
+  }
+
+  @media (hover: hover) {
+    .hero__socials a:hover {
+      color: var(--accent);
+    }
+  }
+</style>
