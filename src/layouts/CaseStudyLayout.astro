@@ -4,6 +4,8 @@
  * the MDX body (problem → architecture → contribution → challenges → results → limitations),
  * then "Next project".
  */
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { Picture } from 'astro:assets';
 import BaseLayout from './BaseLayout.astro';
 import Icon from '@/components/Icon.astro';
@@ -19,6 +21,10 @@ const { project, next } = Astro.props;
 const { data } = project;
 const tldr = data.tldr!;
 const links = evidenceLinks(project);
+// Per-project social image from scripts/og.mjs; the site default otherwise.
+const ogImage = existsSync(join(process.cwd(), 'public', 'og', `${project.id}.png`))
+  ? `/og/${project.id}.png`
+  : undefined;
 const STATUS: Record<string, string> = {
   live: 'Live',
   released: 'Released',
@@ -29,7 +35,9 @@ const STATUS: Record<string, string> = {
 
 <BaseLayout
   title={`${data.title} — ${data.seoTitle ?? data.tagline.replace(/\.$/, '')}`}
-  description={data.summary}
+  description={data.description ?? data.summary}
+  image={ogImage}
+  imageAlt={ogImage ? `${data.title}: ${data.tagline}` : undefined}
   type="article"
 >
   <article class="case">
@@ -42,78 +50,98 @@ const STATUS: Record<string, string> = {
       <p class="case__tagline">{data.tagline}</p>
 
       <dl class="case__meta">
-        <div><dt class="label">Role</dt><dd>{data.role}</dd></div>
-        <div><dt class="label">Team</dt><dd>{data.scope}</dd></div>
-        <div><dt class="label">Timeline</dt><dd>{data.period ?? yearRange(data.timeline)}</dd></div>
-        <div><dt class="label">Status</dt><dd>{STATUS[data.status]}</dd></div>
+        <div>
+          <dt class="label">Role</dt>
+          <dd>{data.role}</dd>
+        </div>
+        <div>
+          <dt class="label">Team</dt>
+          <dd>{data.scope}</dd>
+        </div>
+        <div>
+          <dt class="label">Timeline</dt>
+          <dd>{data.period ?? yearRange(data.timeline)}</dd>
+        </div>
+        <div>
+          <dt class="label">Status</dt>
+          <dd>{STATUS[data.status]}</dd>
+        </div>
         <div class="case__meta-stack">
           <dt class="label">Stack</dt>
-          <dd><TagList items={data.stack} label={`${data.title} technologies`} /></dd>
+          <dd>
+            <TagList items={data.stack} label={`${data.title} technologies`} />
+          </dd>
         </div>
       </dl>
 
-      {
-        links.length > 0 && (
-          <ul class="case__links" aria-label={`${data.title} links`}>
-            {links.map((link) => (
-              <li>
-                <a href={link.href} class="case__link">
-                  {link.label}
-                  <Icon name="external" size={14} />
-                </a>
-              </li>
-            ))}
-          </ul>
-        )
-      }
+      {links.length > 0 && (
+        <ul class="case__links" aria-label={`${data.title} links`}>
+          {links.map((link) => (
+            <li>
+              <a href={link.href} class="case__link">
+                {link.label}
+                <Icon name="external" size={14} />
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
     </header>
 
     <div class="container">
       <section class="tldr" aria-labelledby="tldr-heading">
-        <h2 id="tldr-heading" class="label">TL;DR</h2>
+        <h2 id="tldr-heading" class="label">
+          TL;DR
+        </h2>
         <dl>
-          <div><dt>Problem</dt><dd>{tldr.problem}</dd></div>
-          <div><dt>What I built</dt><dd>{tldr.built}</dd></div>
-          <div><dt>Result</dt><dd>{tldr.result}</dd></div>
+          <div>
+            <dt>Problem</dt>
+            <dd>{tldr.problem}</dd>
+          </div>
+          <div>
+            <dt>What I built</dt>
+            <dd>{tldr.built}</dd>
+          </div>
+          <div>
+            <dt>Result</dt>
+            <dd>{tldr.result}</dd>
+          </div>
         </dl>
       </section>
 
-      {
-        data.cover && data.coverAlt && (
-          <figure class="case__hero">
-            <Picture
-              src={data.cover}
-              alt={data.coverAlt}
-              formats={['avif', 'webp']}
-              layout="constrained"
-              width={832}
-              height={520}
-              sizes="(min-width: 56rem) 832px, calc(100vw - 2rem)"
-              fit="cover"
-              quality={72}
-              loading="eager"
-              fetchpriority="high"
-            />
-          </figure>
-        )
-      }
+      {data.cover && data.coverAlt && (
+        <figure class="case__hero">
+          <Picture
+            src={data.cover}
+            alt={data.coverAlt}
+            formats={['avif', 'webp']}
+            layout="constrained"
+            width={832}
+            height={520}
+            sizes="(min-width: 56rem) 832px, calc(100vw - 2rem)"
+            style={`view-transition-name: cover-${project.id}`}
+            fit="cover"
+            quality={72}
+            loading="eager"
+            fetchpriority="high"
+          />
+        </figure>
+      )}
 
       <div class="case__body prose">
         <slot />
       </div>
 
-      {
-        next && (
-          <nav class="case__next" aria-label="Next project">
-            <p class="label">Next project</p>
-            <a href={`/projects/${next.id}`}>
-              <span class="case__next-title">{next.data.title}</span>
-              <span class="case__next-tagline">{next.data.tagline}</span>
-              <Icon name="arrow-right" size={20} />
-            </a>
-          </nav>
-        )
-      }
+      {next && (
+        <nav class="case__next" aria-label="Next project">
+          <p class="label">Next project</p>
+          <a href={`/projects/${next.id}`}>
+            <span class="case__next-title">{next.data.title}</span>
+            <span class="case__next-tagline">{next.data.tagline}</span>
+            <Icon name="arrow-right" size={20} />
+          </a>
+        </nav>
+      )}
     </div>
   </article>
 </BaseLayout>

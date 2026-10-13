@@ -58,6 +58,8 @@ const projects = defineCollection({
         period: z.string().optional(),
         /** Short phrase for the case-study <title> ("Title — phrase | Name"); falls back to the tagline. */
         seoTitle: z.string().max(60).optional(),
+        /** Search-result description for the case study (≤ 155 characters); falls back to the summary. */
+        description: z.string().max(155).optional(),
         draft: z.boolean().default(false),
       })
       .superRefine((p, ctx) => {

@@ -2,6 +2,7 @@
 title: ConTeX
 tagline: Photograph handwriting or drop in a PDF and get LaTeX back, compiled to a PDF preview in your browser.
 seoTitle: Handwriting to LaTeX at the edge
+description: "How I rebuilt ConTeX on Cloudflare's edge: a Worker that owns the Gemini prompt, LaTeX compiled in the browser, and an offline fallback matching Python."
 summary: >-
   A Cloudflare Worker owns the Gemini prompt; if the AI is unavailable, OCR and an ONNX formula
   recognizer run in the browser instead. LaTeX compiles client-side with pdfTeX in WebAssembly.
