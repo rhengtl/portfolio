@@ -38,4 +38,11 @@ const { src, poster, width, height, label } = Astro.props;
     height: auto;
     background: var(--surface);
   }
+
+  /* The native controls live in the browser's shadow DOM and draw no ring of their own; the host
+     matches :focus while any control inside has focus. Inset because the figure frame clips. */
+  .clip:focus {
+    outline: 3px solid var(--focus);
+    outline-offset: -3px;
+  }
 </style>

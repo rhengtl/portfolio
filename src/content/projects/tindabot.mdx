@@ -30,9 +30,9 @@ links:
 cover: ../../assets/projects/tindabot/cover.png
 coverAlt: >-
   Two TindaBot screens from the demo store. Left: the next supplier trip on Wednesday with about
-  ₱4,450 to bring, ₱1,040 short of the owner's budget, and a buy-now list. Right: the "Why?" sheet
-  for Coca-Cola 1.5L, explaining the estimate from how often the owner buys it and saying it doesn't
-  know what's left on the shelf.
+  ₱4,450 to bring, ₱1,040 short of the owner’s budget, and a buy-now list. Right: the "Why?" sheet
+  for Coca-Cola 1.5L, explaining the estimate from how often the owner buys it and saying it doesn’t
+  know what’s left on the shelf.
 tldr:
   problem: >-
     Sari-sari store owners restock from memory and a notebook. Before each supplier trip they have
@@ -40,7 +40,7 @@ tldr:
     often without data.
   built: >-
     An offline-first web app that turns what the owner already records (purchases, shelf counts,
-    optional sales taps) into a shopping list with quantities, a cash estimate and a one-line "why"
+    optional sales taps) into a shopping list with quantities, a cash estimate and a one-line “why”
     for every number. Cloud backup and an AI helper are optional.
   result: >-
     Live at tindabot.rhengtl.tech, built and validated solo: 456 automated tests, with the business rules checked
@@ -61,13 +61,13 @@ phone, and I built it alone, from the specification to the device testing.
 
 A *sari-sari* store is a neighbourhood shop, usually run from a home. Before each trip to the
 supplier, the owner has to answer four questions: *ano ang bibilhin, ilan, kailan, at magkano ang
-dadalhin* — what to buy, how many, when, and how much money to bring. Today that's done from memory
+dadalhin* — what to buy, how many, when, and how much money to bring. Today that’s done from memory
 and a notebook, so items run out before payday and cash runs short at the supplier.
 
 The constraints shaped every decision:
 
 - **Budget Android phones and patchy data.** It has to work fully offline, with no account.
-- **The numbers must be explainable.** An owner won't trust "buy 3 cases" without knowing why,
+- **The numbers must be explainable.** An owner won’t trust "buy 3 cases" without knowing why,
   and an estimate built on little data has to say so.
 - **Taglish by default**, with an English switch.
 - **Nothing is lost.** Records are money and *utang* (customer credit), so corrupting them is the
@@ -89,7 +89,7 @@ The constraints shaped every decision:
 </Figure>
 
 The design choice that everything else rests on: **the event log is the only source of truth**.
-Stock levels, the shopping list, profit and every customer's balance are derived from it on every
+Stock levels, the shopping list, profit and every customer’s balance are derived from it on every
 change, never stored and patched. That makes the numbers reproducible and testable, and it means
 sync only has to move immutable events.
 
@@ -107,7 +107,7 @@ emulator and a physical phone.
 The app uses two kinds of estimate. When the owner has counted the shelf, it measures real usage
 between counts, weighted toward recent weeks. When there are only purchases, it estimates how fast
 the owner goes through stock from the purchase rhythm — and is explicit that this is *not* sales and
-that it doesn't know what's left. Each estimate carries a confidence level, uncertain quantities are
+that it doesn’t know what’s left. Each estimate carries a confidence level, uncertain quantities are
 shown as a range, and every line has a *bakit* ("why") sheet that explains it in plain words.
 
 To make the arithmetic itself trustworthy, I wrote the rules twice: once in TypeScript for the app
@@ -121,7 +121,7 @@ on a small store. So I generated a fixture of 200 products, 40 customers and 19,
 two years of daily use — and profiled it on a realme C55. Opening the app took 3.3 seconds, and every
 save froze the screen for up to 1.7 seconds.
 
-The rule wasn't the problem; the way it read the log was. It re-scanned the whole log once per
+The rule wasn’t the problem; the way it read the log was. It re-scanned the whole log once per
 product, and once per customer per week for the weekly summaries. Grouping the log by product and by
 customer once per recompute made it 2.6× to 8.3× faster (Fig. 2), with identical output — a randomized test
 holds the grouped path against the original one.
@@ -130,13 +130,13 @@ holds the grouped path against the original one.
 data, mostly reading the event log from storage. I chose not to add a cached snapshot or windowed
 loading, because the full log as the single source of truth is what keeps the numbers trustworthy.
 
-### An AI helper that can't corrupt the books
+### An AI helper that can’t corrupt the books
 
 The AI is optional and boxed in. It **drafts** entries from a receipt photo or a typed or spoken
 note, and nothing is saved until the owner reviews and confirms. When the owner asks a question, the
 model calls tools that run on the phone against local data, and every number in its answer must
 cite the field it came from. The app checks each figure against that source and marks anything it
-can't verify as unverified. The Gemini key stays in a serverless function with per-account limits
+can’t verify as unverified. The Gemini key stays in a serverless function with per-account limits
 of 30 requests a minute and 300 a day.
 
 ### Not losing data when something goes wrong
@@ -181,13 +181,13 @@ storage, with an error that says what to check and a working *Try again*.
 - **Validated on devices**, with a dated log: an Android 16 emulator and a realme C55 on Android 15,
   through onboarding, purchases and counts, utang, the weekly report, sign-in, sync and export.
 
-## Limitations and what I'd do next
+## Limitations and what I’d do next
 
 - **The estimates are only as good as the entries.** Purchases alone give pattern-based estimates;
   counts make them accurate. The app says this in its own wording.
 - **Data lives in the browser.** Clearing site data removes it, so the app nudges owners to export
   or turn on cloud backup.
-- **iOS hasn't been tested**, and the free database plan pauses after about a week idle (the app
+- **iOS hasn’t been tested**, and the free database plan pauses after about a week idle (the app
   keeps working and syncs again when it resumes).
 - **Next:** put it in front of real store owners for a few weeks and measure whether the list
   matches what they actually buy, then revisit the 2-second start-up if real stores reach that size.

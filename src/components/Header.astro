@@ -18,6 +18,20 @@ import ThemeToggle from './ThemeToggle.astro';
       <span class="site-header__name">{site.name}</span>
     </a>
 
+    {/* Directly before the nav it controls: once open, Tab moves from the button into the links. */}
+    <button
+      type="button"
+      class="site-header__menu-button"
+      aria-expanded="false"
+      aria-controls="site-nav"
+      data-menu-button
+      hidden
+    >
+      <span class="visually-hidden">Menu</span>
+      <Icon name="menu" class="site-header__icon-open" />
+      <Icon name="close" class="site-header__icon-close" />
+    </button>
+
     <nav class="site-header__nav" id="site-nav" aria-label="Main">
       <ul>
         {
@@ -47,18 +61,6 @@ import ThemeToggle from './ThemeToggle.astro';
         )
       }
       <ThemeToggle />
-      <button
-        type="button"
-        class="site-header__menu-button"
-        aria-expanded="false"
-        aria-controls="site-nav"
-        data-menu-button
-        hidden
-      >
-        <span class="visually-hidden">Menu</span>
-        <Icon name="menu" class="site-header__icon-open" />
-        <Icon name="close" class="site-header__icon-close" />
-      </button>
     </div>
   </div>
 </header>
@@ -301,6 +303,19 @@ import ThemeToggle from './ThemeToggle.astro';
     .site-header__nav {
       order: 3;
       width: 100%;
+    }
+
+    /* Visual row: brand · theme toggle · menu button (DOM order puts the button before the nav). */
+    .site-header__inner {
+      column-gap: var(--space-2);
+    }
+
+    .site-header__actions {
+      order: 1;
+    }
+
+    .site-header__menu-button {
+      order: 2;
     }
   }
 

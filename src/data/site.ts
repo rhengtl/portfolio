@@ -24,14 +24,14 @@ export const site = {
   description:
     'Rhenier Gustilo, Computer Engineering graduate building ML and backend systems: real-time speech AI, LLM services, and offline-first apps.',
   mission:
-    'I build AI-powered software end to end: real-time speech pipelines on a Raspberry Pi, LLM services at the edge, and offline-first apps people use every day.',
+    'I build AI-powered software end to end: real-time speech pipelines on a Raspberry Pi, LLM services at the edge, and offline-first apps that keep working without a signal.',
   education: {
     degree: 'BS Computer Engineering',
     specialization: 'Machine Learning specialization',
     school: 'Polytechnic University of the Philippines',
     location: 'Sta. Mesa, Manila',
     graduated: 'September 2026',
-    honors: "President's Lister",
+    honors: "President’s Lister",
   },
   availability: 'Based in the Philippines · open to on-site roles in the Philippines and remote roles',
   coreStack: ['Python', 'PyTorch', 'scikit-learn', 'LLM APIs', 'FastAPI', 'TypeScript', 'PostgreSQL'],
@@ -223,7 +223,7 @@ export const skillGroups: SkillGroup[] = [
 
 export const about = {
   paragraphs: [
-    "I'm a Computer Engineering graduate from the Polytechnic University of the Philippines, where I specialized in machine learning.",
+    "I’m a Computer Engineering graduate from the Polytechnic University of the Philippines, where I specialized in machine learning.",
     'The part I enjoy most comes after the model works in a notebook: making it answer in real time on a Raspberry Pi, putting an LLM behind an API that can’t be misused, or keeping an app useful with no signal.',
     'My internships in systems deployment and technical support showed me how things fail in the field, so my projects ship with tests, validation logs and fallbacks.',
   ],
@@ -299,5 +299,5 @@ export const credentials: Credential[] = [
 export const activities = ['Technical Committee, “Beyond the CpEctrum” seminar series, PUP Computer Engineering (2026)'];
 
 export const contact = {
-  lead: "I'm looking for software engineering, machine learning and backend roles, in the Philippines or remote. Email is the fastest way to reach me.",
+  lead: "I’m looking for software engineering, machine learning and backend roles, in the Philippines or remote. Email is the fastest way to reach me.",
 };

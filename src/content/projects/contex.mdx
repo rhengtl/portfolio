@@ -2,7 +2,7 @@
 title: ConTeX
 tagline: Photograph handwriting or drop in a PDF and get LaTeX back, compiled to a PDF preview in your browser.
 seoTitle: Handwriting to LaTeX at the edge
-description: "How I rebuilt ConTeX on Cloudflare's edge: a Worker that owns the Gemini prompt, LaTeX compiled in the browser, and an offline fallback matching Python."
+description: "How I rebuilt ConTeX on Cloudflare’s edge: a Worker that owns the Gemini prompt, LaTeX compiled in the browser, and an offline fallback matching Python."
 summary: >-
   A Cloudflare Worker owns the Gemini prompt; if the AI is unavailable, OCR and an ONNX formula
   recognizer run in the browser instead. LaTeX compiles client-side with pdfTeX in WebAssembly.
@@ -37,8 +37,8 @@ tldr:
     Turning handwritten or printed maths into LaTeX by hand is slow, and the tools that do it
     usually need a paid account, a local TeX install or a server that compiles for you.
   built: >-
-    A free web app on Cloudflare's edge. A Worker sends each page to Gemini with a prompt the
-    client can't touch; the browser compiles the LaTeX itself with pdfTeX in WebAssembly, and
+    A free web app on Cloudflare’s edge. A Worker sends each page to Gemini with a prompt the
+    client can’t touch; the browser compiles the LaTeX itself with pdfTeX in WebAssembly, and
     falls back to on-device OCR when the AI is unavailable.
   result: >-
     Live at contex.rhengtl.tech with 1,197 automated checks across 10 suites, a 34 ms warm
@@ -55,7 +55,7 @@ import fallbackResult from '../../assets/projects/contex/fallback-result.png';
 ConTeX turns a photographed or scanned page — handwriting, printed text, equations — into LaTeX,
 then compiles it to a PDF preview right in the browser. It began as a team project with the same
 four people as EarPrompt, as a Flask app deployed with Docker. This page is about the version
-that's live now: I rebuilt it on Cloudflare's edge in 2026, and every commit to that rebuild, its
+that’s live now: I rebuilt it on Cloudflare’s edge in 2026, and every commit to that rebuild, its
 tests and its CI pipeline is mine.
 
 ## The problem
@@ -76,7 +76,7 @@ The constraints for ConTeX:
 
 ## How it works
 
-<Figure number={1} caption="Where each part runs. The heavy work — compiling and the offline fallback — happens in the visitor's browser, so the server stays small and free." wide>
+<Figure number={1} caption="Where each part runs. The heavy work — compiling and the offline fallback — happens in the visitor’s browser, so the server stays small and free." wide>
   <Lanes
     label="ConTeX architecture"
     lanes={[
@@ -138,14 +138,14 @@ conversion costs *N* + 1, against a free allowance of 100,000 a day.
 
 ### A prompt injection hidden in a performance shortcut
 
-To stay inside the 10 ms CPU budget, the Worker streamed the client's base64 image straight into
+To stay inside the 10 ms CPU budget, the Worker streamed the client’s base64 image straight into
 the JSON request it sent to Gemini, without reading it. Nothing checked that the body really was
 base64, so a client could close the JSON string, append its own instruction, and reopen it — and
 the result still parsed. That made the endpoint a free LLM on our key.
 
 Scanning for quotes would have fixed it, but I measured that at 19 ms for a 25 MB upload, nearly
-double the budget. So I took the client's bytes out of the JSON entirely: they're piped as an
-opaque body into Gemini's Files API, and the Worker writes 100% of the model request around the
+double the budget. So I took the client’s bytes out of the JSON entirely: they’re piped as an
+opaque body into Gemini’s Files API, and the Worker writes 100% of the model request around the
 resulting file reference.
 
 **Trade-off:** about 200 ms slower on a small image. In exchange, nothing the client sends is ever
@@ -154,14 +154,14 @@ parsed as JSON, and uploads are 25% smaller because base64 encoding is gone.
 ### Compiling LaTeX without a server, safely
 
 The open-source engine hung on its first compile from any page below the site root, because it
-loaded its worker from a relative path. Static hosting also can't speak the engine's package
+loaded its worker from a relative path. Static hosting also can’t speak the engine’s package
 protocol, and the engine requests fonts without file extensions. I patched the engine for the
 first two and generated 753 extensionless font aliases for the third.
 
 Compiling untrusted TeX is also a security problem: TeX can read files. The audit found that the
-validator's patterns missed `\openin1=...`, the ordinary form, because a word boundary doesn't fall
-between a letter and a digit. Six constructs shared that hole. A second pass found that pdfTeX's own
-file primitives, such as `\pdffiledump`, were missing entirely; one of them typeset a test file's
+validator’s patterns missed `\openin1=...`, the ordinary form, because a word boundary doesn’t fall
+between a letter and a digit. Six constructs shared that hole. A second pass found that pdfTeX’s own
+file primitives, such as `\pdffiledump`, were missing entirely; one of them typeset a test file’s
 contents, as hex, into the PDF. Both were fixed in the browser validator and back-ported to the Python
 version, and all 26 real benchmark documents still pass.
 
@@ -171,11 +171,11 @@ The fallback runs two recognisers locally: Tesseract for text and an INT8 formul
 (pix2text-mfr) through ONNX Runtime Web. Both had to match the Python pipeline they replaced, and
 both problems were found by measuring rather than by reading code.
 
-The formula model expects images downscaled with Pillow's bicubic filter. A canvas resize is a
+The formula model expects images downscaled with Pillow’s bicubic filter. A canvas resize is a
 different, browser-dependent filter, and a differently filtered image is a different input, so I
-ported Pillow's resampler to JavaScript. Then the first benchmark run scored 69% and looked like a
-failed port. It wasn't: the suite compared raw strings, while the benchmark's scorer normalises
-spacing (`E = m c ^ { 2 }` and `E = mc^2` are the same answer). With the benchmark's own scorer,
+ported Pillow’s resampler to JavaScript. Then the first benchmark run scored 69% and looked like a
+failed port. It wasn’t: the suite compared raw strings, while the benchmark’s scorer normalises
+spacing (`E = m c ^ { 2 }` and `E = mc^2` are the same answer). With the benchmark’s own scorer,
 the browser port came out slightly *ahead* of the Python reference (Results, below). Tesseract is
 the same engine compiled to WebAssembly with the same language file, self-hosted so the offline
 path never contacts a third party.
@@ -212,7 +212,7 @@ rate-limited, or dies on page three.
     ['Formula recogniser on the 75-image benchmark', '16'],
     ['Python suite', '182'],
   ]}
-  note="1,197 checks in total, from the repository's last documented run. The merge suite reproduces all 33 page groups — including the 26 real benchmark outputs merged in pairs and triples — character for character."
+  note="1,197 checks in total, from the repository’s last documented run. The merge suite reproduces all 33 page groups — including the 26 real benchmark outputs merged in pairs and triples — character for character."
 />
 
 <MetricTable
@@ -241,13 +241,13 @@ rate-limited, or dies on page three.
   note="Throttling was emulated, not measured on a real low-end phone."
 />
 
-## Limitations and what I'd do next
+## Limitations and what I’d do next
 
-- **The AI runs on Gemini's free tier.** The app says so before upload, because Google may use
+- **The AI runs on Gemini’s free tier.** The app says so before upload, because Google may use
   free-tier input for training. A paid tier would remove that caveat.
-- **The offline fallback is noticeably weaker** on handwriting (Fig. 3). It's a safety net, not a
+- **The offline fallback is noticeably weaker** on handwriting (Fig. 3). It’s a safety net, not a
   replacement.
-- **Some packages are deliberately absent** — `hyperref`, `tikz` and `cancel` aren't in the TeX
+- **Some packages are deliberately absent** — `hyperref`, `tikz` and `cancel` aren’t in the TeX
   subset. The preview drops them and says which, while the downloaded `.tex` stays exactly as the
   model wrote it.
 - **The benchmark is synthetic.** It proves the port is faithful, not how well either path reads

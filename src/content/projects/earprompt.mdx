@@ -2,9 +2,9 @@
 title: EarPrompt
 tagline: A wearable that listens to a conversation and whispers one short tip on how to respond.
 seoTitle: Real-time AI conversation coach
-description: "How I built EarPrompt's speech pipeline: speaker verification, Taglish LLM tips and streaming text-to-speech on a Raspberry Pi 5, at 3.8 s average latency."
+description: "How I built EarPrompt’s speech pipeline: speaker verification, Taglish LLM tips and streaming text-to-speech on a Raspberry Pi 5, at 3.8 s average latency."
 summary: >-
-  Thesis prototype: a Raspberry Pi 5 earpiece that tells the wearer's voice apart from the other
+  Thesis prototype: a Raspberry Pi 5 earpiece that tells the wearer’s voice apart from the other
   speaker, generates a Taglish coaching tip with an LLM and streams it to Bluetooth earbuds, with a
   Flutter app for users and speech-language pathologists.
 tier: flagship
@@ -38,11 +38,11 @@ tldr:
     tools only coach them afterwards or need them to look at a screen.
   built: >-
     The software for a Raspberry Pi 5 earpiece: it detects when the other person has finished
-    speaking, confirms it wasn't the wearer, and plays one short Taglish tip on how to respond in
+    speaking, confirms it wasn’t the wearer, and plays one short Taglish tip on how to respond in
     a Bluetooth earbud — plus a Flutter app for users and their therapists.
   result: >-
-    A working prototype evaluated in the team's thesis: 3.8 s average end-to-end latency (4.2 s
-    P95), about US$0.02–0.07 of LLM cost per 30-minute session, and "High" acceptability (2.81 / 4)
+    A working prototype evaluated in the team’s thesis: 3.8 s average end-to-end latency (4.2 s
+    P95), about US$0.02–0.07 of LLM cost per 30-minute session, and “High” acceptability (2.81 / 4)
     from one patient and three speech-language pathologists.
 ---
 
@@ -58,8 +58,8 @@ import appDashboard from '../../assets/projects/earprompt/app-dashboard.png';
 import team from '../../assets/projects/earprompt/team.jpg';
 
 EarPrompt is a small device worn during a conversation. When the other person finishes speaking, it
-whispers one short coaching tip into the wearer's earbud: a nudge on how to respond, never a script.
-It was my team's undergraduate thesis at the Polytechnic University of the Philippines,
+whispers one short coaching tip into the wearer’s earbud: a nudge on how to respond, never a script.
+It was my team’s undergraduate thesis at the Polytechnic University of the Philippines,
 *EarPrompt: A Real-Time Conversational AI Assistant for Enhancing Verbal Communication*, with four
 named researchers. This page covers the software, most of which I wrote; the research, evaluation
 and manuscript belong to the whole team.
@@ -76,13 +76,13 @@ constraints:
 
 - **It must not speak for the user.** The tip says *how* to respond, never the words to say — the
   prompt forbids writing a literal reply.
-- **It has to know who is talking.** A tip triggered by the wearer's own voice is noise.
-- **It must be short and in the user's language** — natural Taglish, one sentence.
-- **It runs on a battery** in a small enclosure, so the device can't host large models.
+- **It has to know who is talking.** A tip triggered by the wearer’s own voice is noise.
+- **It must be short and in the user’s language** — natural Taglish, one sentence.
+- **It runs on a battery** in a small enclosure, so the device can’t host large models.
 
 ## How it works
 
-<Figure number={1} caption="One conversational turn, from the other person's speech to a tip in the wearer's ear." wide>
+<Figure number={1} caption="One conversational turn, from the other person’s speech to a tip in the wearer’s ear." wide>
   <FlowSteps
     label="EarPrompt pipeline"
     steps={[
@@ -104,19 +104,19 @@ captioned on screen as it arrived.
 >
   <VideoClip
     src="/media/earprompt-session.mp4"
-    poster="/media/earprompt-session.jpg"
+    poster="/media/earprompt-session.webp"
     width={1280}
     height={720}
-    label="EarPrompt testing session clip, muted, with the device's tips captioned on screen"
+    label="EarPrompt testing session clip, muted, with the device’s tips captioned on screen"
   />
 </Figure>
 
 Around that loop, the device runs a small **Flask API** that the companion app uses to start and
 stop listening, switch between automatic and push-button turn detection, register a voiceprint,
 calibrate room noise, change the voice and tone, and read battery level from an INA219 sensor on
-the power board. The wearer's *own* speech isn't wasted: it goes to a voice-analysis module that
+the power board. The wearer’s *own* speech isn’t wasted: it goes to a voice-analysis module that
 measures pitch, intensity, jitter, shimmer and harmonics-to-noise ratio with Praat (via Parselmouth)
-and compares them with the user's baseline.
+and compares them with the user’s baseline.
 
 <Figure
   number={3}
@@ -132,7 +132,7 @@ history. Accounts and session data live in Firebase.
 <Figure
   number={4}
   src={appSettings}
-  alt="Three phone screens of the EarPrompt app's Speech Tools tab: turn-detection mode and room-noise calibration, a 'Voice Registered' confirmation showing four voice embeddings, and the 'Not Registered' state with an explanation of voice registration."
+  alt="Three phone screens of the EarPrompt app’s Speech Tools tab: turn-detection mode and room-noise calibration, a 'Voice Registered' confirmation showing four voice embeddings, and the 'Not Registered' state with an explanation of voice registration."
   caption="Speech Tools: voiceprint registration, automatic vs push-button turn detection, and room-noise calibration."
 />
 
@@ -142,7 +142,7 @@ session can be traced to transcription, the LLM or speech synthesis instead of g
 <Figure
   number={5}
   src={appDashboard}
-  alt="Two phone screens of the EarPrompt dashboard for the author's own test account. Left: Session Performance with total turn latency of 2,937 ms split into speech-to-text 1,667 ms, LLM 707 ms and text-to-speech 563 ms, then pitch 101.86 Hz and intensity 73.04 dB with plain-language labels. Right: jitter, shimmer and harmonics-to-noise ratio, an AI-written speech therapy assessment, and buttons to start listening and view analysis history."
+  alt="Two phone screens of the EarPrompt dashboard for the author’s own test account. Left: Session Performance with total turn latency of 2,937 ms split into speech-to-text 1,667 ms, LLM 707 ms and text-to-speech 563 ms, then pitch 101.86 Hz and intensity 73.04 dB with plain-language labels. Right: jitter, shimmer and harmonics-to-noise ratio, an AI-written speech therapy assessment, and buttons to start listening and view analysis history."
   caption="The user dashboard after a test session on my own account: per-stage latency for the turn, the acoustic measurements with plain-language readings, and an AI-written summary. Screens from the thesis (Figure 10)."
 />
 
@@ -155,15 +155,15 @@ session can be traced to transcription, the LLM or speech synthesis instead of g
   handling, and battery monitoring over I²C.
 - **Voice analysis** — the acoustic measurements and the baseline comparison that raises alerts
   such as "pitch too high" or "unstable pitch".
-- **Most of the Flutter app** — the therapist's patient list and session history, voice
+- **Most of the Flutter app** — the therapist’s patient list and session history, voice
   registration, device Wi-Fi setup and the dashboard.
 
 ## Key technical challenges
 
 ### Telling the wearer apart from the other person
 
-A tip should follow the *other* person's turn. Each utterance is embedded with an ECAPA-TDNN model
-and compared, by cosine similarity, with the centroid of the wearer's enrollment embeddings
+A tip should follow the *other* person’s turn. Each utterance is embedded with an ECAPA-TDNN model
+and compared, by cosine similarity, with the centroid of the wearer’s enrollment embeddings
 (outliers are filtered out at registration). Scripted enrollment and natural conversation produce
 noticeably lower same-speaker scores than a model card would suggest: in real conversations the
 wearer typically scored 0.40–0.65 against their centroid and conversation partners 0.05–0.25, so
@@ -174,13 +174,13 @@ was too short to embed, got filed as the other person, and set off a tip at exac
 moment. I lowered the minimum to 0.4 s of speech after silence trimming, which covers those
 replies.
 
-**Trade-off:** anything still too short to embed reliably is treated as the wearer's. The system
+**Trade-off:** anything still too short to embed reliably is treated as the wearer’s. The system
 would rather stay quiet than whisper a tip at the wrong moment.
 
 ### Knowing when someone has finished speaking
 
 Energy-based silence detection alone kept "hearing" speech whenever background noise kept the
-level up, so turns didn't end. I added Silero's neural voice-activity detector on 32 ms windows,
+level up, so turns didn’t end. I added Silero’s neural voice-activity detector on 32 ms windows,
 with gain for soft or distant speech and a room-noise calibration step in the app. Energy is still
 the fallback when the detector is unavailable or undecided.
 
@@ -193,7 +193,7 @@ before the LLM has finished.
 
 Memory needed a bound too. A context-window overflow found in testing was fixed by updating the
 prompt-truncation logic, and the current code sends a compact summary rather than the transcript:
-at most ten keywords and two short snippets from the last five turns. The thesis's cost analysis
+at most ten keywords and two short snippets from the last five turns. The thesis’s cost analysis
 (Fig. 7) shows
 the effect of keeping more turns: tokens grow linearly rather than running away, and even 25 turns
 of context cost under seven US cents per 30-minute session.
@@ -201,7 +201,7 @@ of context cost under seven US cents per 30-minute session.
 ## Results
 
 All figures are from the thesis evaluation. Latency is the *Prompt Delivery Window*: the time from
-the end of the other person's speech to the tip being delivered.
+the end of the other person’s speech to the tip being delivered.
 
 <MetricTable
   caption="End-to-end latency across three test sessions"
@@ -215,7 +215,7 @@ the end of the other person's speech to the tip being delivered.
   ]}
 />
 
-<Figure number={6} caption="EarPrompt's average and P95 latency against reference tiers for voice-AI systems, as cited in the thesis. It sits in the 3–5 s tier: slower than the industry median, well clear of the breakdown range.">
+<Figure number={6} caption="EarPrompt’s average and P95 latency against reference tiers for voice-AI systems, as cited in the thesis. It sits in the 3–5 s tier: slower than the industry median, well clear of the breakdown range.">
   <LatencyScale
     label="Latency compared with voice-AI tiers"
     max={15}
@@ -269,7 +269,7 @@ the tips scored highest (3.00 from both groups). Reliability scored lowest (2.64
 it "Low" (2.40), citing glitches, unclear malfunction alerts and weaker performance in long
 sessions.
 
-## Limitations and what I'd do next
+## Limitations and what I’d do next
 
 - **The evaluation is small and measured acceptability, not therapeutic effect.** One patient and
   three speech-language pathologists took part in a single post-use evaluation. The thesis itself
@@ -277,7 +277,7 @@ sessions.
 - **3.8 seconds is slow for conversation.** It avoids the breakdown range, but tips can arrive
   after the moment has passed. The next step is an on-device or edge language model and cached
   voiceprints, which would also remove the dependency on internet access.
-- **Speaker verification was tuned, not formally measured.** I'd record a labelled set of real
+- **Speaker verification was tuned, not formally measured.** I’d record a labelled set of real
   sessions and report false-accept and false-reject rates instead of relying on observed score
   ranges.
 - **Hardware:** a directional microphone array with noise reduction, and a smaller, cooler

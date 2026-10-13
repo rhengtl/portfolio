@@ -14,6 +14,9 @@ export default defineConfig({
   // Stylesheets stay external: styles of components used only inside MDX are inlined after
   // Astro computes CSP hashes, so inline copies would be blocked. External CSS is covered by 'self'.
   build: { format: 'file', inlineStylesheets: 'never' },
+  // One stylesheet for the whole site (~12 kB gzipped): a single render-blocking request,
+  // cached for every later page, instead of 4–6 per page.
+  vite: { build: { cssCodeSplit: false } },
   // Astro 7 defaults to JSX whitespace rules, which drop spaces between
   // adjacent inline elements. Prose-heavy pages are safer with plain minification.
   compressHTML: true,
