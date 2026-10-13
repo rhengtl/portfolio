@@ -25,6 +25,7 @@ links:
   paper: https://drive.google.com/file/d/1P69KKB13oHfeHU089pQ5AMQEtUyjJy2s/view?usp=sharing
 cover: ../../assets/projects/earprompt/cover.jpg
 coverAlt: >-
-  EarPrompt prototype with its 3D-printed lid open, showing a Raspberry Pi 5 with an active cooler,
-  colour-coded wiring to the lid, and a Bluetooth earbud case docked on the side.
+  The EarPrompt device: a white 3D-printed enclosure with a perforated lid and a microphone module
+  on top, a front panel with one red and two blue buttons and a status LED, and a Bluetooth earbud
+  case docked on the side.
 ---

@@ -22,7 +22,7 @@ metrics:
     context: 383 → 46 ms on two years of data
 links:
   repo: https://github.com/RhenGTL/tindabot
-  live: https://tindabot.vercel.app
+  live: https://tindabot.rhengtl.tech
 cover: ../../assets/projects/tindabot/cover.png
 coverAlt: >-
   TindaBot demo store on a phone: next supplier trip on Wednesday, about ₱4,990 to bring, ₱1,580

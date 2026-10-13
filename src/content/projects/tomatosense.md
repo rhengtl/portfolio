@@ -19,5 +19,5 @@ metrics:
     context: 80-image held-out test
 links:
   repo: https://github.com/RhenGTL/tomatosense
-  live: https://tomato-sense.onrender.com
+  live: https://tomato-sense.rhengtl.tech
 ---

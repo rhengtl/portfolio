@@ -23,9 +23,10 @@ metrics:
     context: warm, desktop
 links:
   repo: https://github.com/RhenGTL/contex
-  live: https://contex.rhengtl.workers.dev
+  live: https://contex.rhengtl.tech
 cover: ../../assets/projects/contex/cover.png
 coverAlt: >-
-  ConTeX home page headed "Turn any page into LaTeX", with a notice that pages are sent to Gemini,
-  a terms checkbox and an upload area for images and PDFs.
+  Input and output of a ConTeX conversion. Input: a handwritten page reading "The energy of a
+  particle is given by E = mc², where c is the speed of light in vacuum." Output: the LaTeX ConTeX
+  returned, with the sentence as text and the equation as display math \[ E = mc^2 \].
 ---
