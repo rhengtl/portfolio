@@ -1,0 +1,114 @@
+---
+/**
+ * Pipeline diagram as an ordered list (PORTFOLIO_SPEC §15.4): numbered steps with arrows.
+ * Horizontal on desktop, vertical on mobile. Real text, so it reflows and stays accessible.
+ */
+interface Step {
+  title: string;
+  detail: string;
+  tech?: string;
+}
+
+interface Props {
+  steps: Step[];
+  label: string;
+  /** Force a vertical layout even on desktop (for long step text). */
+  vertical?: boolean;
+}
+
+const { steps, label, vertical = false } = Astro.props;
+---
+
+<ol class:list={['flow', { 'flow--vertical': vertical }]} aria-label={label}>
+  {
+    steps.map((step, i) => (
+      <li class="flow__step">
+        <span class="flow__index" aria-hidden="true">
+          {String(i + 1).padStart(2, '0')}
+        </span>
+        <p class="flow__title">{step.title}</p>
+        <p class="flow__detail">{step.detail}</p>
+        {step.tech && <p class="flow__tech">{step.tech}</p>}
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .flow {
+    display: grid;
+    gap: var(--space-5);
+    margin: 0;
+    padding: var(--space-5);
+    list-style: none;
+  }
+
+  .flow__step {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--space-1);
+    padding-left: var(--space-7);
+  }
+
+  /* Arrow to the next step: down on mobile, right on desktop. */
+  .flow__step:not(:last-child)::after {
+    content: '↓' / '';
+    position: absolute;
+    left: 0.55rem;
+    bottom: calc(-1 * var(--space-5));
+    color: var(--accent);
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .flow__index {
+    position: absolute;
+    left: 0;
+    top: 0.1rem;
+    font-family: var(--font-code);
+    font-size: var(--text-label);
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .flow__title {
+    font-weight: 600;
+  }
+
+  .flow__detail {
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+
+  .flow__tech {
+    font-family: var(--font-code);
+    font-size: var(--text-label);
+    color: var(--text);
+  }
+
+  @media (min-width: 64rem) {
+    .flow:not(.flow--vertical) {
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
+      gap: var(--space-6);
+    }
+
+    .flow:not(.flow--vertical) .flow__step {
+      padding-left: 0;
+      padding-top: var(--space-6);
+    }
+
+    .flow:not(.flow--vertical) .flow__index {
+      top: 0;
+    }
+
+    .flow:not(.flow--vertical) .flow__step:not(:last-child)::after {
+      content: '→' / '';
+      left: auto;
+      right: calc(-1 * var(--space-5));
+      top: 0;
+      bottom: auto;
+    }
+  }
+</style>

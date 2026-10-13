@@ -1,0 +1,259 @@
+---
+title: EarPrompt
+tagline: A wearable that listens to a conversation and whispers one short tip on how to respond.
+seoTitle: Real-time AI conversation coach
+summary: >-
+  Thesis prototype: a Raspberry Pi 5 earpiece that tells the wearer's voice apart from the other
+  speaker, generates a Taglish coaching tip with an LLM and streams it to Bluetooth earbuds, with a
+  Flutter app for users and speech-language pathologists.
+tier: flagship
+order: 1
+status: thesis
+scope: Team of 4
+role: Lead developer — audio/AI pipeline, backend, device control and most of the mobile app
+period: Three semesters, 2025–⁠26
+timeline:
+  start: 2025-10-01
+  end: 2026-09-30
+stack: [Python, PyTorch, LLM APIs, Raspberry Pi, Flutter]
+metrics:
+  - label: End-to-end latency
+    value: 3.8 s avg
+    context: 4.2 s P95 over 3 test sessions
+  - label: LLM cost
+    value: $0.02–0.07
+    context: per 30-minute session
+links:
+  paper: https://drive.google.com/file/d/1P69KKB13oHfeHU089pQ5AMQEtUyjJy2s/view?usp=sharing
+cover: ../../assets/projects/earprompt/cover.jpg
+coverAlt: >-
+  The EarPrompt device: a white 3D-printed enclosure with a perforated lid and a microphone module
+  on top, a front panel with one red and two blue buttons and a status LED, and a Bluetooth earbud
+  case docked on the side.
+tldr:
+  problem: >-
+    People with speech anxiety or speech-related conditions can freeze mid-conversation, and most
+    tools only coach them afterwards or need them to look at a screen.
+  built: >-
+    The software for a Raspberry Pi 5 earpiece: it detects when the other person has finished
+    speaking, confirms it wasn't the wearer, and plays one short Taglish tip on how to respond in
+    a Bluetooth earbud — plus a Flutter app for users and their therapists.
+  result: >-
+    A working prototype evaluated in the team's thesis: 3.8 s average end-to-end latency (4.2 s
+    P95), about US$0.02–0.07 of LLM cost per 30-minute session, and "High" acceptability (2.81 / 4)
+    from one patient and three speech-language pathologists.
+---
+
+import Figure from '../../components/case/Figure.astro';
+import FlowSteps from '../../components/case/FlowSteps.astro';
+import MetricTable from '../../components/case/MetricTable.astro';
+import LatencyScale from '../../components/case/LatencyScale.astro';
+import BarList from '../../components/case/BarList.astro';
+import deviceInside from '../../assets/projects/earprompt/device-inside.jpg';
+import appSettings from '../../assets/projects/earprompt/app-settings.png';
+import testingSession from '../../assets/projects/earprompt/testing-session.jpg';
+import team from '../../assets/projects/earprompt/team.jpg';
+
+EarPrompt was my team's undergraduate thesis at the Polytechnic University of the Philippines:
+*EarPrompt: A Real-Time Conversational AI Assistant for Enhancing Verbal Communication*. Four of us
+are named researchers on it. This page covers the software, most of which I wrote; the research,
+evaluation and manuscript belong to the whole team.
+
+## The problem
+
+Speech anxiety and cognitive overload can make a person go blank in the middle of a conversation.
+For someone working with a speech-language pathologist, that moment is exactly when help is most
+useful and least available: practice apps give feedback after the fact, and phone assistants need
+you to look away and ask.
+
+We wanted a cue that arrives *during* the conversation, privately, in the ear. That set the
+constraints:
+
+- **It must not speak for the user.** The tip says *how* to respond, never *what* to say.
+- **It has to know who is talking.** A tip triggered by the wearer's own voice is noise.
+- **It must be short and in the user's language** — natural Taglish, one sentence.
+- **It runs on a battery** in a small enclosure, so the device can't host large models.
+
+## How it works
+
+<Figure number={1} caption="One conversational turn, from the other person's speech to a tip in the wearer's ear." wide>
+  <FlowSteps
+    label="EarPrompt pipeline"
+    steps={[
+      { title: 'Listen', detail: 'An I²S microphone streams audio. A neural voice-activity detector, checked against a room-noise calibration, decides when an utterance has ended.', tech: 'Silero VAD · energy fallback' },
+      { title: 'Who spoke?', detail: 'A speaker embedding of the utterance is compared with the wearer’s registered voiceprint. Only the other person’s speech triggers a tip.', tech: 'SpeechBrain ECAPA-TDNN' },
+      { title: 'Transcribe', detail: 'Silence is trimmed before upload, then the utterance is transcribed.', tech: 'ElevenLabs Scribe' },
+      { title: 'Coach', detail: 'An LLM writes one Taglish tip of 12 words or fewer, in the chosen tone, using a compact memory of recent turns.', tech: 'OpenAI GPT-4.1 mini' },
+      { title: 'Speak', detail: 'LLM tokens are streamed into text-to-speech as they arrive, and the audio plays in a Bluetooth earbud.', tech: 'ElevenLabs Flash v2.5' },
+    ]}
+  />
+</Figure>
+
+Around that loop, the device runs a small **Flask API** that the companion app uses to start and
+stop listening, switch between automatic and push-button turn detection, register a voiceprint,
+calibrate room noise, change the voice and tone, and read battery level from an INA219 sensor on
+the power board. The wearer's *own* speech isn't wasted: it goes to a voice-analysis module that
+measures pitch, intensity, jitter, shimmer and harmonics-to-noise ratio with Praat (via Parselmouth)
+and compares them with the user's baseline.
+
+<Figure
+  number={2}
+  src={deviceInside}
+  alt="The EarPrompt enclosure with its lid open: a Raspberry Pi 5 with an active cooler, colour-coded wiring running to the lid, and a black Bluetooth earbud case docked on the side."
+  caption="Inside the prototype: a Raspberry Pi 5 with an active cooler in a 3D-printed enclosure, with the earbud case docked on the side."
+/>
+
+The **Flutter app** has two roles. Users register their voice, choose automatic or manual mode,
+calibrate the room and review past sessions; therapists see their linked patients' session
+history. Accounts and session data live in Firebase.
+
+<Figure
+  number={3}
+  src={appSettings}
+  alt="Three phone screens of the EarPrompt app's Speech Tools tab: turn-detection mode and room-noise calibration, a 'Voice Registered' confirmation showing four voice embeddings, and the 'Not Registered' state with an explanation of voice registration."
+  caption="Speech Tools: voiceprint registration, automatic vs push-button turn detection, and room-noise calibration."
+/>
+
+## My contribution
+
+- **The audio and AI pipeline** — voice-activity detection, speaker verification, transcription,
+  the LLM prompt and the streaming text-to-speech path. I wrote about 2,490 of the 2,660 lines in
+  the current pipeline module.
+- **The device API and hardware control** — the Flask endpoints the app calls, the button and LED
+  handling, and battery monitoring over I²C.
+- **Voice analysis** — the acoustic measurements and the baseline comparison that raises alerts
+  such as "pitch too high" or "unstable pitch".
+- **Most of the Flutter app** — the therapist's patient list and session history, voice
+  registration, device Wi-Fi setup and the dashboard.
+
+## Key technical challenges
+
+### Telling the wearer apart from the other person
+
+A tip should follow the *other* person's turn. Each utterance is embedded with an ECAPA-TDNN model
+and compared, by cosine similarity, with the centroid of the wearer's enrollment embeddings
+(outliers are filtered out at registration). Scripted enrollment and natural conversation produce
+noticeably lower same-speaker scores than a model card would suggest: in real conversations the
+wearer typically scored 0.40–0.65 against their centroid and conversation partners 0.05–0.25, so
+the threshold was set at 0.35.
+
+**Trade-off:** an utterance too short to embed reliably is treated as the wearer's. The system
+would rather stay quiet than whisper a tip at the wrong moment.
+
+### Knowing when someone has finished speaking
+
+Energy-based silence detection alone kept "hearing" speech whenever background noise kept the
+level up, so turns didn't end. I added Silero's neural voice-activity detector on 32 ms windows,
+with gain for soft or distant speech and a room-noise calibration step in the app. Energy is still
+the fallback when the detector is unavailable or undecided.
+
+### Latency with three cloud services in a row
+
+Speech-to-text, the LLM and text-to-speech run one after another, so every hop counts. Tips are
+capped at one sentence (12 words, 30 tokens), and instead of waiting for the full LLM reply, the
+tokens are forwarded to the text-to-speech WebSocket as they arrive, so audio generation starts
+before the LLM has finished. A context-window overflow found in testing was fixed by truncating the
+conversation memory, which is why token use grows linearly with conversation length (Fig. 5).
+
+## Results
+
+All figures are from the thesis evaluation. Latency is the *Prompt Delivery Window*: the time from
+the end of the other person's speech to the tip being delivered.
+
+<MetricTable
+  caption="End-to-end latency across three test sessions"
+  columns={['Session', 'Average', 'P50', 'P95']}
+  numeric={[1, 2, 3]}
+  rows={[
+    ['Session 1', '3,636 ms', '3,752 ms', '3,937 ms'],
+    ['Session 2', '3,984 ms', '3,905 ms', '4,499 ms'],
+    ['Session 3', '3,832 ms', '3,759 ms', '4,149 ms'],
+    ['Across sessions', '3,817 ms', '3,805 ms', '4,195 ms'],
+  ]}
+/>
+
+<Figure number={4} caption="EarPrompt's average and P95 latency against reference tiers for voice-AI systems, as cited in the thesis. It sits in the 3–5 s tier: slower than the industry median, well clear of the breakdown range.">
+  <LatencyScale
+    label="Latency compared with voice-AI tiers"
+    max={15}
+    bands={[
+      { from: 0, to: 1, label: 'Theoretical ideal' },
+      { from: 1.4, to: 1.7, label: 'Industry median' },
+      { from: 3, to: 5, label: 'Common experience (P90–P95)' },
+      { from: 8, to: 15, label: 'Worst case: conversation breaks down' },
+    ]}
+    markers={[
+      { value: 3.817, label: 'Average' },
+      { value: 4.195, label: 'P95' },
+    ]}
+  />
+</Figure>
+
+<Figure number={5} caption="Average tokens per LLM request as the remembered conversation grows. Growth stays linear because older context is truncated.">
+  <BarList
+    label="Tokens per request by conversation length"
+    rows={[
+      { label: '5 turns', value: 399 },
+      { label: '10 turns', value: 689 },
+      { label: '15 turns', value: 978 },
+      { label: '20 turns', value: 1267, display: '1,267' },
+      { label: '25 turns', value: 1556, display: '1,556' },
+    ]}
+  />
+</Figure>
+
+<MetricTable
+  caption="LLM cost by conversation length (GPT-4.1 mini pricing)"
+  columns={['Context', 'Tokens / request', 'Cost / request', 'Cost / 30-min session']}
+  numeric={[1, 2, 3]}
+  rows={[
+    ['5 turns', '399', '$0.000264', '$0.0238'],
+    ['10 turns', '689', '$0.000384', '$0.0346'],
+    ['15 turns', '978', '$0.000502', '$0.0452'],
+    ['20 turns', '1,267', '$0.000622', '$0.0560'],
+    ['25 turns', '1,556', '$0.000741', '$0.0667'],
+  ]}
+/>
+
+Two more measurements from the thesis:
+
+- **Power and runtime (estimated, not measured on a discharge test):** 8.88 W average and 13.64 W
+  peak from component ratings, giving about **3 hours** at average load on the two 18650 cells.
+- **Maintainability:** five logged fixes took an average of **1.6 hours** to diagnose, patch and
+  validate, the longest being the context-window overflow (2.5 h).
+
+<Figure
+  number={6}
+  src={testingSession}
+  alt="A structured testing session in a small therapy room: a team member holds a laptop while two participants sit at a small table with the EarPrompt device and two phones."
+  caption="A structured testing session. Participants' identities are kept confidential."
+/>
+
+The acceptability survey used a 4-point scale. The overall mean was **2.81 ("High")**. Accuracy of
+the tips scored highest (3.00 from both groups). Reliability scored lowest (2.64): the patient rated
+it "Low" (2.40), citing glitches, unclear malfunction alerts and weaker performance in long
+sessions.
+
+## Limitations and what I'd do next
+
+- **The evaluation is small and measured acceptability, not therapeutic effect.** One patient and
+  three speech-language pathologists took part in a single post-use evaluation. The thesis itself
+  says the results show technical viability, not clinical effectiveness.
+- **3.8 seconds is slow for conversation.** It avoids the breakdown range, but tips can arrive
+  after the moment has passed. The next step is an on-device or edge language model and cached
+  voiceprints, which would also remove the dependency on internet access.
+- **Speaker verification was tuned, not formally measured.** I'd record a labelled set of real
+  sessions and report false-accept and false-reject rates instead of relying on observed score
+  ranges.
+- **Hardware:** a directional microphone array with noise reduction, and a smaller, cooler
+  enclosure — the reliability complaints came from exactly these areas.
+
+<Figure
+  number={7}
+  src={team}
+  alt="The four EarPrompt researchers in business attire after their thesis defense, holding bound manuscripts, the EarPrompt device and a laptop with a congratulations slide."
+  caption="The EarPrompt team after the thesis defense."
+  maxWidth="40rem"
+/>
+
+The full thesis, including methodology and survey instruments, is linked above.

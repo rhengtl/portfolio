@@ -1,0 +1,98 @@
+---
+/**
+ * Architecture diagram as columns ("where each part runs"). Side by side on desktop,
+ * stacked on mobile. Each lane lists its components with a one-line responsibility.
+ */
+interface Item {
+  title: string;
+  detail: string;
+}
+
+interface Lane {
+  title: string;
+  note?: string;
+  items: Item[];
+}
+
+interface Props {
+  lanes: Lane[];
+  label: string;
+}
+
+const { lanes, label } = Astro.props;
+---
+
+<div class="lanes" role="group" aria-label={label}>
+  {
+    lanes.map((lane) => (
+      <section class="lane">
+        <h3 class="lane__title label">{lane.title}</h3>
+        {lane.note && <p class="lane__note">{lane.note}</p>}
+        <ul class="lane__items">
+          {lane.items.map((item) => (
+            <li>
+              <span class="lane__item-title">{item.title}</span>
+              <span class="lane__item-detail">{item.detail}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .lanes {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-5);
+  }
+
+  .lane {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    border: var(--hairline);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+  }
+
+  .lane__title {
+    color: var(--text);
+  }
+
+  .lane__note {
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+
+  .lane__items {
+    display: grid;
+    gap: var(--space-3);
+    list-style: none;
+  }
+
+  .lane__items li {
+    display: grid;
+    gap: 0.125rem;
+    padding-top: var(--space-3);
+    border-top: var(--hairline);
+  }
+
+  .lane__item-title {
+    font-weight: 600;
+    font-size: var(--text-small);
+  }
+
+  .lane__item-detail {
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+
+  @media (min-width: 48rem) {
+    .lanes {
+      grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    }
+  }
+</style>

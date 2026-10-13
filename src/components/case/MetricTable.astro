@@ -1,0 +1,117 @@
+---
+/**
+ * Results table (PORTFOLIO_SPEC §9.2 part 8). Scrolls horizontally inside a labelled,
+ * focusable region on narrow screens; numeric columns use tabular figures.
+ */
+interface Props {
+  caption: string;
+  columns: string[];
+  rows: (string | number)[][];
+  /** Zero-based indices of numeric columns (right-aligned, tabular). */
+  numeric?: number[];
+  note?: string;
+}
+
+const { caption, columns, rows, numeric = [], note } = Astro.props;
+const id = `table-${caption.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)}`;
+---
+
+<div class="metric">
+<div class="metric-table" role="region" aria-labelledby={id} tabindex="0">
+  <table>
+    <caption id={id}>{caption}</caption>
+    <thead>
+      <tr>
+        {
+          columns.map((col, i) => (
+            <th scope="col" class:list={{ num: numeric.includes(i) }}>
+              {col}
+            </th>
+          ))
+        }
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((row) => (
+          <tr>
+            {row.map((cell, i) =>
+              i === 0 ? (
+                <th scope="row">{cell}</th>
+              ) : (
+                <td class:list={{ num: numeric.includes(i) }}>{cell}</td>
+              ),
+            )}
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+{note && <p class="metric-table__note">{note}</p>}
+</div>
+
+<style>
+  .metric {
+    margin: var(--space-6) 0;
+  }
+
+  .metric-table {
+    margin: 0;
+    overflow-x: auto;
+    border: var(--hairline);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-small);
+  }
+
+  caption {
+    padding: var(--space-3) var(--space-4);
+    text-align: left;
+    font-family: var(--font-code);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: var(--hairline);
+  }
+
+  th,
+  td {
+    padding: var(--space-2) var(--space-4);
+    text-align: left;
+    vertical-align: top;
+    border-bottom: var(--hairline);
+  }
+
+  thead th {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  tbody th {
+    font-weight: 500;
+  }
+
+  tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+
+  .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .metric-table__note {
+    margin-top: var(--space-2);
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+</style>

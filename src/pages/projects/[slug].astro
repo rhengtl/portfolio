@@ -1,0 +1,29 @@
+---
+import { render } from 'astro:content';
+import CaseStudyLayout from '@/layouts/CaseStudyLayout.astro';
+import { getProjects, hasCaseStudy, type Project } from '@/lib/projects';
+
+export async function getStaticPaths() {
+  const studies = (await getProjects()).filter(hasCaseStudy);
+  return studies.map((project, i) => {
+    // PORTFOLIO_SPEC §9.2: every case study opens with a TL;DR.
+    if (!project.data.tldr) {
+      throw new Error(`Case study "${project.id}" has a body but no tldr in its frontmatter.`);
+    }
+    const next = studies.length > 1 ? studies[(i + 1) % studies.length] : undefined;
+    return { params: { slug: project.id }, props: { project, next } };
+  });
+}
+
+interface Props {
+  project: Project;
+  next?: Project;
+}
+
+const { project, next } = Astro.props;
+const { Content } = await render(project);
+---
+
+<CaseStudyLayout project={project} next={next}>
+  <Content />
+</CaseStudyLayout>

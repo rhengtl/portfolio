@@ -1,0 +1,72 @@
+---
+/**
+ * Horizontal bar list for one series over ordered categories (dataviz: magnitude, one hue,
+ * value at the tip). Bars ≤ 24px thick, 4px rounded data-end, square at the baseline.
+ */
+interface Row {
+  label: string;
+  value: number;
+  display?: string;
+}
+
+interface Props {
+  rows: Row[];
+  label: string;
+  unit?: string;
+}
+
+const { rows, label, unit = '' } = Astro.props;
+const max = Math.max(...rows.map((r) => r.value));
+---
+
+<ul class="bars" aria-label={label}>
+  {
+    rows.map((row) => (
+      <li title={`${row.label}: ${row.display ?? row.value}${unit}`}>
+        <span class="bars__label">{row.label}</span>
+        <span class="bars__track" aria-hidden="true">
+          <span class="bars__bar" style={`width: ${((row.value / max) * 100).toFixed(1)}%`} />
+        </span>
+        <span class="bars__value tabular">
+          {row.display ?? row.value}
+          {unit}
+        </span>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .bars {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    list-style: none;
+    font-size: var(--text-small);
+  }
+
+  .bars li {
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr) 4.5rem;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .bars__track {
+    display: block;
+    height: 1rem;
+  }
+
+  .bars__bar {
+    display: block;
+    height: 100%;
+    min-width: 2px;
+    border-radius: 0 4px 4px 0;
+    background: var(--chart-strong);
+  }
+
+  .bars__value {
+    text-align: right;
+    font-weight: 500;
+  }
+</style>

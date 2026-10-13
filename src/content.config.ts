@@ -46,6 +46,18 @@ const projects = defineCollection({
           .default({}),
         cover: image().optional(),
         coverAlt: z.string().optional(),
+        /** Case-study TL;DR (PORTFOLIO_SPEC §9.2 part 2). Required when the entry has a body. */
+        tldr: z
+          .object({
+            problem: z.string(),
+            built: z.string(),
+            result: z.string(),
+          })
+          .optional(),
+        /** Case-study meta strip: e.g. "Oct 2025 – Sep 2026". Falls back to the year range. */
+        period: z.string().optional(),
+        /** Short phrase for the case-study <title> ("Title — phrase | Name"); falls back to the tagline. */
+        seoTitle: z.string().max(60).optional(),
         draft: z.boolean().default(false),
       })
       .superRefine((p, ctx) => {

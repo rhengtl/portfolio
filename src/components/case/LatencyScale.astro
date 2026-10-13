@@ -1,0 +1,195 @@
+---
+/**
+ * Emphasis chart (dataviz: "one series is the point, rest are context"): reference latency
+ * tiers as neutral bands on one seconds scale, with the measured values as accent markers.
+ * HTML/CSS so labels stay real-size on phones. Every value is also printed as text.
+ */
+interface Band {
+  from: number;
+  to: number;
+  label: string;
+}
+
+interface Marker {
+  value: number;
+  label: string;
+}
+
+interface Props {
+  max: number;
+  bands: Band[];
+  markers: Marker[];
+  label: string;
+}
+
+const { max, bands, markers, label } = Astro.props;
+const pct = (v: number) => `${((v / max) * 100).toFixed(2)}%`;
+const ticks = Array.from({ length: Math.floor(max / 3) + 1 }, (_, i) => i * 3);
+---
+
+<div class="lat" role="group" aria-label={label}>
+  <ul class="lat__markers" aria-label="Measured">
+    {
+      markers.map((m) => (
+        <li style={`left: ${pct(m.value)}`} title={`${m.label}: ${m.value.toFixed(2)} s`}>
+          <span class="lat__marker-label">
+            {m.label} <strong class="tabular">{m.value.toFixed(1)} s</strong>
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="lat__track" aria-hidden="true">
+    {
+      bands.map((b, i) => (
+        <span
+          class={`lat__band lat__band--${i}`}
+          style={`left: ${pct(b.from)}; width: ${pct(b.to - b.from)}`}
+          title={`${b.label}: ${b.from}–${b.to} s`}
+        />
+      ))
+    }
+    {markers.map((m) => <span class="lat__pin" style={`left: ${pct(m.value)}`} />)}
+  </div>
+
+  <div class="lat__axis" aria-hidden="true">
+    {ticks.map((t) => <span style={`left: ${pct(t)}`}>{t} s</span>)}
+  </div>
+
+  <ol class="lat__legend" aria-label="Reference tiers">
+    {
+      bands.map((b, i) => (
+        <li>
+          <span class={`lat__swatch lat__band--${i}`} aria-hidden="true" />
+          <span>
+            <strong class="tabular">
+              {b.from === 0 ? `under ${b.to}` : `${b.from}–${b.to}`} s
+            </strong>{' '}
+            {b.label}
+          </span>
+        </li>
+      ))
+    }
+  </ol>
+</div>
+
+<style>
+  .lat {
+    position: relative;
+    padding: var(--space-8) var(--space-5) var(--space-5);
+  }
+
+  .lat__markers {
+    list-style: none;
+  }
+
+  .lat__markers li {
+    position: absolute;
+    top: var(--space-4);
+    transform: translateX(-50%);
+  }
+
+  /* Second marker label sits on the right of its pin to avoid colliding with the first. */
+  .lat__markers li:nth-child(2) {
+    transform: translateX(0.4rem);
+    top: calc(var(--space-4) + 1.4rem);
+  }
+
+  .lat__marker-label {
+    white-space: nowrap;
+    font-size: var(--text-small);
+  }
+
+  .lat__track {
+    position: relative;
+    height: 1.25rem;
+    margin-top: var(--space-5);
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--border) 50%, var(--surface));
+  }
+
+  .lat__band {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-right: 2px solid var(--surface);
+  }
+
+  /* Neutral ordinal greys: context, not data. */
+  .lat__band--0 {
+    background: color-mix(in srgb, var(--muted) 28%, var(--surface));
+  }
+  .lat__band--1 {
+    background: color-mix(in srgb, var(--muted) 42%, var(--surface));
+  }
+  .lat__band--2 {
+    background: color-mix(in srgb, var(--muted) 56%, var(--surface));
+  }
+  .lat__band--3 {
+    background: color-mix(in srgb, var(--muted) 72%, var(--surface));
+  }
+
+  .lat__pin {
+    position: absolute;
+    top: -0.75rem;
+    bottom: -0.25rem;
+    width: 3px;
+    margin-left: -1.5px;
+    border-radius: 2px;
+    background: var(--accent);
+    box-shadow: 0 0 0 2px var(--surface);
+  }
+
+  .lat__axis {
+    position: relative;
+    height: 1.5rem;
+    margin-top: var(--space-2);
+    font-family: var(--font-code);
+    font-size: var(--text-label);
+    color: var(--muted);
+  }
+
+  .lat__axis span {
+    position: absolute;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+
+  .lat__axis span:first-child {
+    transform: none;
+  }
+
+  .lat__axis span:last-child {
+    transform: translateX(-100%);
+  }
+
+  .lat__legend {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    list-style: none;
+    font-size: var(--text-small);
+  }
+
+  .lat__legend li {
+    display: flex;
+    gap: var(--space-2);
+    align-items: baseline;
+  }
+
+  .lat__swatch {
+    display: inline-block;
+    flex: none;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 2px;
+    transform: translateY(1px);
+  }
+
+  @media (min-width: 48rem) {
+    .lat__legend {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

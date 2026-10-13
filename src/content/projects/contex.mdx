@@ -1,0 +1,217 @@
+---
+title: ConTeX
+tagline: Photograph handwriting or drop in a PDF and get LaTeX back, compiled to a PDF preview in your browser.
+seoTitle: Handwriting to LaTeX at the edge
+summary: >-
+  A Cloudflare Worker owns the Gemini prompt; if the AI is unavailable, OCR and an ONNX formula
+  recognizer run in the browser instead. LaTeX compiles client-side with pdfTeX in WebAssembly.
+  Ported from Flask to the edge with byte-identical output.
+tier: flagship
+order: 2
+status: live
+scope: Team of 4
+role: Lead developer — edge port, security audit, test suites, CI/CD
+period: May 2025 – Sep 2026
+timeline:
+  start: 2025-05-01
+  end: 2026-09-30
+stack: [JavaScript, Cloudflare Workers, Gemini API, WebAssembly, Firebase]
+metrics:
+  - label: Automated checks
+    value: '576'
+    context: plus 180 Python tests
+  - label: In-browser LaTeX compile
+    value: 34 ms
+    context: warm, desktop
+links:
+  repo: https://github.com/RhenGTL/contex
+  live: https://contex.rhengtl.tech
+cover: ../../assets/projects/contex/cover.png
+coverAlt: >-
+  Input and output of a ConTeX conversion. Input: a handwritten page reading "The energy of a
+  particle is given by E = mc², where c is the speed of light in vacuum." Output: the LaTeX ConTeX
+  returned, with the sentence as text and the equation as display math.
+tldr:
+  problem: >-
+    Turning handwritten or printed maths into LaTeX by hand is slow, and the tools that do it
+    usually need a paid account, a local TeX install or a server that compiles for you.
+  built: >-
+    A free web app on Cloudflare's edge. A Worker sends each page to Gemini with a prompt the
+    client can't touch; the browser compiles the LaTeX itself with pdfTeX in WebAssembly, and
+    falls back to on-device OCR when the AI is unavailable.
+  result: >-
+    Live at contex.rhengtl.tech with 576 automated checks plus 180 Python tests, a 34 ms warm
+    in-browser compile, and a pre-launch security audit that closed a prompt-injection hole and a
+    TeX file-read bypass.
+---
+
+import Figure from '../../components/case/Figure.astro';
+import Lanes from '../../components/case/Lanes.astro';
+import MetricTable from '../../components/case/MetricTable.astro';
+import aiResult from '../../assets/projects/contex/ai-result.png';
+import fallbackResult from '../../assets/projects/contex/fallback-result.png';
+
+ConTeX began as a team project with the same four people as EarPrompt, as a Flask app deployed with
+Docker. This page is about the version that's live now: I rebuilt it on Cloudflare's
+edge in 2026, and every commit to that rebuild, its tests and its CI pipeline is mine.
+
+## The problem
+
+Students and teachers write maths by hand, but documents are expected in LaTeX. Retyping a page of
+equations is slow and error-prone. The existing shortcuts tend to need a paid account, a heavy local
+TeX installation, or a server that compiles documents on your behalf.
+
+The constraints for ConTeX:
+
+- **Free to run.** It has to stay inside free tiers, including a Worker CPU budget of 10 ms per
+  request.
+- **No compile server.** Compiling LaTeX should cost nothing per user.
+- **Safe to expose.** A public endpoint that calls an LLM on our key must not become a free,
+  general-purpose LLM for anyone who finds it.
+- **Honest when the AI is down.** If the model is unavailable, the user should still get a result,
+  and know it was produced differently.
+
+## How it works
+
+<Figure number={1} caption="Where each part runs. The heavy work — compiling and the offline fallback — happens in the visitor's browser, so the server stays small and free." wide>
+  <Lanes
+    label="ConTeX architecture"
+    lanes={[
+      {
+        title: 'Browser',
+        items: [
+          { title: 'Input', detail: 'File picker, drag-and-drop, camera or a drawing canvas; PDFs are split into single pages.' },
+          { title: 'Validate and compile', detail: 'Unsafe TeX is refused, then pdfTeX (SwiftLaTeX, WebAssembly) compiles against a self-hosted TeX Live subset.' },
+          { title: 'Preview', detail: 'pdf.js renders the compiled PDF on a canvas; the .tex downloads unchanged.' },
+          { title: 'Offline fallback', detail: 'Tesseract OCR and an INT8 ONNX formula recognizer, running locally — nothing is sent anywhere.' },
+        ],
+      },
+      {
+        title: 'Cloudflare Worker',
+        items: [
+          { title: 'Owns the prompt', detail: 'Takes only raw page bytes, uploads them to Gemini’s Files API and writes the whole model request itself.' },
+          { title: 'Model chain', detail: 'Tries a chain of models in order and keeps per-model outage records in KV.' },
+          { title: 'Sessions and history', detail: 'Signed session cookie, sign-in via Identity Toolkit, saved conversions scoped by user ID.' },
+          { title: 'Protection', detail: 'Per-caller rate limits in a Durable Object, and a strict Content-Security-Policy on every response.' },
+        ],
+      },
+      {
+        title: 'Google services',
+        items: [
+          { title: 'Gemini', detail: 'Reads the page and returns LaTeX.' },
+          { title: 'Firebase', detail: 'Accounts and saved history. Firestore rules deny every direct client read and write.' },
+        ],
+      },
+    ]}
+  />
+</Figure>
+
+Two decisions explain most of the design. **The heavy work runs in the browser**, so there is no
+compile queue, no server timeout and no gigabyte-sized TeX install to host. And **static assets
+never invoke the Worker**: the TeX tree, the WebAssembly engine and the model weights are served
+directly by the platform, free and unmetered. A page load costs two Worker requests; an *N*-page
+conversion costs *N* + 1, against a free allowance of 100,000 a day.
+
+<Figure
+  number={2}
+  src={aiResult}
+  alt="The ConTeX result page for a converted handwritten page: download, copy and open-PDF buttons, the compiled PDF preview showing the sentence and the equation E = mc², and the LaTeX source panel underneath."
+  caption="A converted page: the compiled PDF preview and the LaTeX source, both produced without a compile server."
+/>
+
+## My contribution
+
+- **The edge rebuild.** I ported the Flask app to a Cloudflare Worker plus browser modules in
+  stages. Each stage had its own parity suite against the Python version, which stayed the source
+  of truth until the port was complete.
+- **In-browser LaTeX.** I made the pdfTeX engine work from static hosting and built the TeX Live
+  subset it compiles against.
+- **The security audit**, and the fixes for what it found (below).
+- **Tests and delivery.** The test suites, including browser end-to-end runs, and a GitHub Actions
+  pipeline that rebuilds the model assets, runs every suite, deploys and then checks the live site
+  answers.
+
+## Key technical challenges
+
+### A prompt injection hidden in a performance shortcut
+
+To stay inside the 10 ms CPU budget, the Worker streamed the client's base64 image straight into
+the JSON request it sent to Gemini, without reading it. Nothing checked that the body really was
+base64, so a client could close the JSON string, append its own instruction, and reopen it — and
+the result still parsed. That made the endpoint a free LLM on our key.
+
+Scanning for quotes would have fixed it, but I measured that at 19 ms for a 25 MB upload, nearly
+double the budget. So I took the client's bytes out of the JSON entirely: they're piped as an
+opaque body into Gemini's Files API, and the Worker writes 100% of the model request around the
+resulting file reference.
+
+**Trade-off:** about 200 ms slower on a small image. In exchange, nothing the client sends is ever
+parsed as JSON, and uploads are 25% smaller because base64 encoding is gone.
+
+### Compiling LaTeX without a server, safely
+
+The open-source engine hung on its first compile from any page below the site root, because it
+loaded its worker from a relative path. Static hosting also can't speak the engine's package
+protocol, and the engine requests fonts without file extensions. I patched the engine for the
+first two and generated 753 extensionless font aliases for the third.
+
+Compiling untrusted TeX is also a security problem: TeX can read files. The audit found that the
+validator's patterns missed `\openin1=...`, the ordinary form, because a word boundary doesn't fall
+between a letter and a digit. Six constructs shared that hole. A second pass found that pdfTeX's own
+file primitives, such as `\pdffiledump`, were missing entirely; one of them typeset a test file's
+contents, as hex, into the PDF. Both were fixed in the browser validator and back-ported to the Python
+version, and all 26 real benchmark documents still pass.
+
+### Never quietly producing a worse document
+
+If the AI is unavailable when you press Convert, ConTeX asks before using the offline path. If the
+AI fails partway through a multi-page document, it finishes the remaining pages locally and says so
+on the result. A dedicated test drives the whole conversion against a Gemini that is down,
+rate-limited, or dies on page three.
+
+<Figure
+  number={3}
+  src={fallbackResult}
+  alt="A ConTeX result converted without AI: a notice reads 'This document was converted without AI. It was converted in this browser instead, so quality may be lower', with notes that two lines were recognised with low confidence, above the compiled preview."
+  caption="The fallback path, captured during an AI outage: the result says it was converted locally and flags low-confidence lines instead of hiding them."
+/>
+
+## Results
+
+<MetricTable
+  caption="Automated verification"
+  columns={['Suite', 'Checks']}
+  numeric={[1]}
+  rows={[
+    ['Validation and compile parity', '217'],
+    ['Multi-page merge (byte-identical to the Python version)', '211'],
+    ['Sessions, authentication and history', '111'],
+    ['Guest history, end to end in a browser', '37'],
+    ['Python suite (original implementation)', '180'],
+  ]}
+  note="The merge suite runs 33 page groups, including the 26 real benchmark outputs merged in pairs and triples; the edge version reproduces every one character for character."
+/>
+
+<MetricTable
+  caption="In-browser LaTeX compile"
+  columns={['Case', 'Desktop', 'Pixel 7 viewport, 4× CPU throttle']}
+  numeric={[1, 2]}
+  rows={[
+    ['Cold compile (engine + 9.9 MB format)', '291 ms', '311 ms'],
+    ['Warm compile', '34–39 ms', '38–41 ms'],
+    ['Large document (26 pages)', '79 ms', '85 ms'],
+  ]}
+  note="Throttling was emulated, not measured on a real low-end phone."
+/>
+
+## Limitations and what I'd do next
+
+- **The AI runs on Gemini's free tier.** The app says so before upload, because Google may use
+  free-tier input for training. A paid tier would remove that caveat.
+- **The offline fallback is noticeably weaker** on handwriting (Fig. 3). It's a safety net, not a
+  replacement.
+- **Some packages are deliberately absent** — `hyperref`, `tikz` and `cancel` aren't in the TeX
+  subset. The preview drops them and says which, while the downloaded `.tex` stays exactly as the
+  model wrote it.
+- **Next:** test on real low-end hardware rather than emulation, and add an accuracy benchmark for
+  the AI path on the same frozen corpus the fallback is already scored against.

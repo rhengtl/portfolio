@@ -1,0 +1,153 @@
+---
+/**
+ * Before → after per item (dataviz: dumbbell, one hue, two validated ordinal shades).
+ * Values are printed as text on every row, so colour is never the only channel.
+ */
+interface Row {
+  label: string;
+  before: number;
+  after: number;
+}
+
+interface Props {
+  rows: Row[];
+  label: string;
+  unit: string;
+  beforeLabel?: string;
+  afterLabel?: string;
+}
+
+const { rows, label, unit, beforeLabel = 'Before', afterLabel = 'After' } = Astro.props;
+const max = Math.max(...rows.flatMap((r) => [r.before, r.after]));
+const pct = (v: number) => `${((v / max) * 100).toFixed(2)}%`;
+---
+
+<div class="db" role="group" aria-label={label}>
+  <ul class="db__legend" aria-label="Legend">
+    <li><span class="db__dot db__dot--before" aria-hidden="true"></span>{beforeLabel}</li>
+    <li><span class="db__dot db__dot--after" aria-hidden="true"></span>{afterLabel}</li>
+  </ul>
+  <ul class="db__rows">
+    {
+      rows.map((r) => (
+        <li>
+          <span class="db__label">{r.label}</span>
+          <span
+            class="db__track"
+            aria-hidden="true"
+            title={`${r.label}: ${r.before} → ${r.after} ${unit}`}
+          >
+            <span class="db__line" style={`left: ${pct(r.after)}; width: calc(${pct(r.before)} - ${pct(r.after)})`} />
+            <span class="db__dot db__dot--before" style={`left: ${pct(r.before)}`} />
+            <span class="db__dot db__dot--after" style={`left: ${pct(r.after)}`} />
+          </span>
+          <span class="db__values tabular">
+            {r.before} → <strong>{r.after}</strong> {unit} ({(r.before / r.after).toFixed(1)}×)
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .db {
+    padding: var(--space-5);
+    font-size: var(--text-small);
+  }
+
+  .db__legend {
+    display: flex;
+    gap: var(--space-5);
+    margin-bottom: var(--space-4);
+    list-style: none;
+  }
+
+  .db__legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .db__legend .db__dot {
+    position: static;
+    transform: none;
+  }
+
+  .db__rows {
+    display: grid;
+    gap: var(--space-4);
+    list-style: none;
+  }
+
+  .db__rows li {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .db__track {
+    position: relative;
+    display: block;
+    height: 1rem;
+    margin-inline: 0.5rem;
+  }
+
+  /* Recessive rule through the dots' centres. */
+  .db__track::before {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .db__line {
+    position: absolute;
+    top: 50%;
+    height: 2px;
+    transform: translateY(-50%);
+    background: var(--chart-soft);
+  }
+
+  .db__dot {
+    position: absolute;
+    top: 50%;
+    display: inline-block;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 2px var(--surface);
+  }
+
+  .db__dot--before {
+    background: var(--chart-soft);
+  }
+
+  .db__dot--after {
+    background: var(--chart-strong);
+  }
+
+  .db__values {
+    color: var(--muted);
+  }
+
+  .db__values strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  @media (min-width: 48rem) {
+    .db__rows li {
+      grid-template-columns: 13rem minmax(0, 1fr) 11rem;
+      align-items: center;
+      gap: var(--space-4);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .db__rows li {
+      grid-template-columns: 17rem minmax(0, 1fr) 11rem;
+    }
+  }
+</style>
