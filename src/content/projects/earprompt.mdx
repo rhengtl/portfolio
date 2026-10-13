@@ -25,6 +25,7 @@ metrics:
     value: $0.02–0.07
     context: per 30-minute session
 links:
+  repo: https://github.com/rhengtl/earprompt
   paper: https://drive.google.com/file/d/1P69KKB13oHfeHU089pQ5AMQEtUyjJy2s/view?usp=sharing
   video: https://youtu.be/Dx30iPuR59U
 cover: ../../assets/projects/earprompt/cover.jpg
@@ -149,14 +150,14 @@ session can be traced to transcription, the LLM or speech synthesis instead of g
 ## My contribution
 
 - **The audio and AI pipeline** — voice-activity detection, speaker verification, transcription,
-  the LLM prompt and the streaming text-to-speech path. I wrote about 2,490 of the 2,660 lines in
-  the current pipeline module.
+  the LLM prompt and the streaming text-to-speech path. I wrote 2,465 of the 2,663 lines in the
+  pipeline module (`backend/assistant.py`).
 - **The device API and hardware control** — the Flask endpoints the app calls, the button and LED
   handling, and battery monitoring over I²C.
 - **Voice analysis** — the acoustic measurements and the baseline comparison that raises alerts
   such as "pitch too high" or "unstable pitch".
 - **Most of the Flutter app** — the therapist’s patient list and session history, voice
-  registration, device Wi-Fi setup and the dashboard.
+  registration, device Wi-Fi setup and the dashboard — about 90% of the app’s Dart code.
 
 ## Key technical challenges
 
@@ -291,4 +292,4 @@ sessions.
   maxWidth="40rem"
 />
 
-The full thesis, including methodology and survey instruments, is linked above.
+The full thesis, including methodology and survey instruments, and the source code are linked at the top of this page.
