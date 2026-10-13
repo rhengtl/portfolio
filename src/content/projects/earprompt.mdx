@@ -25,6 +25,7 @@ metrics:
     context: per 30-minute session
 links:
   paper: https://drive.google.com/file/d/1P69KKB13oHfeHU089pQ5AMQEtUyjJy2s/view?usp=sharing
+  video: https://youtu.be/Dx30iPuR59U
 cover: ../../assets/projects/earprompt/cover.jpg
 coverAlt: >-
   The EarPrompt device: a white 3D-printed enclosure with a perforated lid and a microphone module
@@ -49,10 +50,10 @@ import FlowSteps from '../../components/case/FlowSteps.astro';
 import MetricTable from '../../components/case/MetricTable.astro';
 import LatencyScale from '../../components/case/LatencyScale.astro';
 import BarList from '../../components/case/BarList.astro';
+import VideoClip from '../../components/case/VideoClip.astro';
 import deviceInside from '../../assets/projects/earprompt/device-inside.jpg';
 import appSettings from '../../assets/projects/earprompt/app-settings.png';
 import appDashboard from '../../assets/projects/earprompt/app-dashboard.png';
-import testingSession from '../../assets/projects/earprompt/testing-session.jpg';
 import team from '../../assets/projects/earprompt/team.jpg';
 
 EarPrompt is a small device worn during a conversation. When the other person finishes speaking, it
@@ -93,6 +94,22 @@ constraints:
   />
 </Figure>
 
+Here is that loop in a real session. The device sits on the table, and each tip it whispered is
+captioned on screen as it arrived.
+
+<Figure
+  number={2}
+  caption="A structured testing session with a patient and a speech-language pathologist (32 s, muted). The first tip reads “masyado kang mabagal magsalita” — “you’re speaking too slowly”; the second suggests sharing the songs the speaker had played. The full narrated demo is linked at the top of this page."
+>
+  <VideoClip
+    src="/media/earprompt-session.mp4"
+    poster="/media/earprompt-session.jpg"
+    width={1280}
+    height={720}
+    label="EarPrompt testing session clip, muted, with the device's tips captioned on screen"
+  />
+</Figure>
+
 Around that loop, the device runs a small **Flask API** that the companion app uses to start and
 stop listening, switch between automatic and push-button turn detection, register a voiceprint,
 calibrate room noise, change the voice and tone, and read battery level from an INA219 sensor on
@@ -101,7 +118,7 @@ measures pitch, intensity, jitter, shimmer and harmonics-to-noise ratio with Pra
 and compares them with the user's baseline.
 
 <Figure
-  number={2}
+  number={3}
   src={deviceInside}
   alt="The EarPrompt enclosure with its lid open: a Raspberry Pi 5 with an active cooler, colour-coded wiring running to the lid, and a black Bluetooth earbud case docked on the side."
   caption="Inside the prototype: a Raspberry Pi 5 with an active cooler in a 3D-printed enclosure, with the earbud case docked on the side."
@@ -112,7 +129,7 @@ calibrate the room and review past sessions; therapists see their linked patient
 history. Accounts and session data live in Firebase.
 
 <Figure
-  number={3}
+  number={4}
   src={appSettings}
   alt="Three phone screens of the EarPrompt app's Speech Tools tab: turn-detection mode and room-noise calibration, a 'Voice Registered' confirmation showing four voice embeddings, and the 'Not Registered' state with an explanation of voice registration."
   caption="Speech Tools: voiceprint registration, automatic vs push-button turn detection, and room-noise calibration."
@@ -122,7 +139,7 @@ Every turn is timed stage by stage, and the app shows it next to the voice analy
 session can be traced to transcription, the LLM or speech synthesis instead of guessed at.
 
 <Figure
-  number={4}
+  number={5}
   src={appDashboard}
   alt="Two phone screens of the EarPrompt dashboard for the author's own test account. Left: Session Performance with total turn latency of 2,937 ms split into speech-to-text 1,667 ms, LLM 707 ms and text-to-speech 563 ms, then pitch 101.86 Hz and intensity 73.04 dB with plain-language labels. Right: jitter, shimmer and harmonics-to-noise ratio, an AI-written speech therapy assessment, and buttons to start listening and view analysis history."
   caption="The user dashboard after a test session on my own account: per-stage latency for the turn, the acoustic measurements with plain-language readings, and an AI-written summary. Screens from the thesis (Figure 10)."
@@ -176,7 +193,7 @@ before the LLM has finished.
 Memory needed a bound too. A context-window overflow found in testing was fixed by updating the
 prompt-truncation logic, and the current code sends a compact summary rather than the transcript:
 at most ten keywords and two short snippets from the last five turns. The thesis's cost analysis
-(Fig. 6) shows
+(Fig. 7) shows
 the effect of keeping more turns: tokens grow linearly rather than running away, and even 25 turns
 of context cost under seven US cents per 30-minute session.
 
@@ -197,7 +214,7 @@ the end of the other person's speech to the tip being delivered.
   ]}
 />
 
-<Figure number={5} caption="EarPrompt's average and P95 latency against reference tiers for voice-AI systems, as cited in the thesis. It sits in the 3–5 s tier: slower than the industry median, well clear of the breakdown range.">
+<Figure number={6} caption="EarPrompt's average and P95 latency against reference tiers for voice-AI systems, as cited in the thesis. It sits in the 3–5 s tier: slower than the industry median, well clear of the breakdown range.">
   <LatencyScale
     label="Latency compared with voice-AI tiers"
     max={15}
@@ -214,7 +231,7 @@ the end of the other person's speech to the tip being delivered.
   />
 </Figure>
 
-<Figure number={6} caption="Average tokens per LLM request as more conversation turns are kept in context (thesis Table 16). Growth is linear, not runaway.">
+<Figure number={7} caption="Average tokens per LLM request as more conversation turns are kept in context (thesis Table 16). Growth is linear, not runaway.">
   <BarList
     label="Tokens per request by conversation length"
     rows={[
@@ -246,14 +263,6 @@ Two more measurements from the thesis:
   peak from component ratings, giving about **3 hours** at average load on the two 18650 cells.
 - **Maintainability:** five logged fixes took an average of **1.6 hours** to diagnose, patch and
   validate, the longest being the context-window overflow (2.5 h).
-
-<Figure
-  number={7}
-  src={testingSession}
-  alt="A structured testing session in a small therapy room: a team member holds a laptop while two participants sit at a small table with the EarPrompt device and two phones."
-  caption="A structured testing session. Participants' identities are kept confidential."
-/>
-
 The acceptability survey used a 4-point scale. The overall mean was **2.81 ("High")**. Accuracy of
 the tips scored highest (3.00 from both groups). Reliability scored lowest (2.64): the patient rated
 it "Low" (2.40), citing glitches, unclear malfunction alerts and weaker performance in long

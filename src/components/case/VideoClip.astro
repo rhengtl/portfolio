@@ -1,0 +1,41 @@
+---
+/**
+ * Short muted demo clip for a case-study Figure (PORTFOLIO_SPEC §9.2 part 3): native controls,
+ * poster frame, nothing downloaded until the visitor presses play, never autoplays.
+ */
+interface Props {
+  /** Path under public/, e.g. /media/clip.mp4 (H.264, faststart, ≤ 3 MB). */
+  src: string;
+  poster: string;
+  width: number;
+  height: number;
+  /** Accessible name; the Figure caption carries the full description. */
+  label: string;
+}
+
+const { src, poster, width, height, label } = Astro.props;
+---
+
+<video
+  class="clip"
+  controls
+  muted
+  playsinline
+  preload="none"
+  poster={poster}
+  width={width}
+  height={height}
+  aria-label={label}
+>
+  <source src={src} type="video/mp4" />
+  <a href={src}>Download the clip (MP4)</a>
+</video>
+
+<style>
+  .clip {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: var(--surface);
+  }
+</style>
