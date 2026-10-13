@@ -18,7 +18,8 @@ timeline:
 stack: [TypeScript, React, PostgreSQL, IndexedDB, Gemini API]
 metrics:
   - label: Automated tests
-    value: '294'
+    value: '456'
+    context: including 25 against a real Supabase project
   - label: Faster recompute
     value: 8×
     context: 383 → 46 ms on two years of data
@@ -41,8 +42,8 @@ tldr:
     optional sales taps) into a shopping list with quantities, a cash estimate and a one-line "why"
     for every number. Cloud backup and an AI helper are optional.
   result: >-
-    Live at tindabot.rhengtl.tech, built and validated solo: 294 automated tests checked against an
-    independent Python model, and an 8× faster recompute on two years of data after profiling on a
+    Live at tindabot.rhengtl.tech, built and validated solo: 456 automated tests, with the business rules checked
+    against an independent Python model, and an 8× faster recompute on two years of data after profiling on a
     real budget phone.
 ---
 
@@ -50,6 +51,10 @@ import Figure from '../../components/case/Figure.astro';
 import FlowSteps from '../../components/case/FlowSteps.astro';
 import MetricTable from '../../components/case/MetricTable.astro';
 import Dumbbell from '../../components/case/Dumbbell.astro';
+
+TindaBot helps a small-store owner plan the next supplier trip: what to buy, how many, and how much
+cash to bring, with a plain-language reason behind every number. It works offline on a budget
+phone, and I built it alone, from the specification to the device testing.
 
 ## The problem
 
@@ -168,9 +173,10 @@ storage, with an error that says what to check and a working *Try again*.
   ]}
 />
 
-- **294 automated tests** covering the business rules (against the Python reference values), the
-  local database, the sync engine against an in-memory cloud, the AI proxy and drafts, and the
-  interface wording.
+- **456 automated tests**: 431 that run offline — the business rules against the Python reference
+  values, the local database, the sync engine against an in-memory cloud, the AI proxy and drafts,
+  and the interface wording — plus 25 that run the sync engine and database policies against a real
+  Supabase project with dedicated test users.
 - **Validated on devices**, with a dated log: an Android 16 emulator and a realme C55 on Android 15,
   through onboarding, purchases and counts, utang, the weekly report, sign-in, sync and export.
 

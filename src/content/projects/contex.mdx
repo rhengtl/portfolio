@@ -18,8 +18,8 @@ timeline:
 stack: [JavaScript, Cloudflare Workers, Gemini API, WebAssembly, Firebase]
 metrics:
   - label: Automated checks
-    value: '576'
-    context: plus 180 Python tests
+    value: '1,197'
+    context: across 10 test suites
   - label: In-browser LaTeX compile
     value: 34 ms
     context: warm, desktop
@@ -40,7 +40,7 @@ tldr:
     client can't touch; the browser compiles the LaTeX itself with pdfTeX in WebAssembly, and
     falls back to on-device OCR when the AI is unavailable.
   result: >-
-    Live at contex.rhengtl.tech with 576 automated checks plus 180 Python tests, a 34 ms warm
+    Live at contex.rhengtl.tech with 1,197 automated checks across 10 suites, a 34 ms warm
     in-browser compile, and a pre-launch security audit that closed a prompt-injection hole and a
     TeX file-read bypass.
 ---
@@ -51,9 +51,11 @@ import MetricTable from '../../components/case/MetricTable.astro';
 import aiResult from '../../assets/projects/contex/ai-result.png';
 import fallbackResult from '../../assets/projects/contex/fallback-result.png';
 
-ConTeX began as a team project with the same four people as EarPrompt, as a Flask app deployed with
-Docker. This page is about the version that's live now: I rebuilt it on Cloudflare's
-edge in 2026, and every commit to that rebuild, its tests and its CI pipeline is mine.
+ConTeX turns a photographed or scanned page — handwriting, printed text, equations — into LaTeX,
+then compiles it to a PDF preview right in the browser. It began as a team project with the same
+four people as EarPrompt, as a Flask app deployed with Docker. This page is about the version
+that's live now: I rebuilt it on Cloudflare's edge in 2026, and every commit to that rebuild, its
+tests and its CI pipeline is mine.
 
 ## The problem
 
@@ -162,6 +164,21 @@ file primitives, such as `\pdffiledump`, were missing entirely; one of them type
 contents, as hex, into the PDF. Both were fixed in the browser validator and back-ported to the Python
 version, and all 26 real benchmark documents still pass.
 
+### Moving the offline models into the browser without losing accuracy
+
+The fallback runs two recognisers locally: Tesseract for text and an INT8 formula model
+(pix2text-mfr) through ONNX Runtime Web. Both had to match the Python pipeline they replaced, and
+both problems were found by measuring rather than by reading code.
+
+The formula model expects images downscaled with Pillow's bicubic filter. A canvas resize is a
+different, browser-dependent filter, and a differently filtered image is a different input, so I
+ported Pillow's resampler to JavaScript. Then the first benchmark run scored 69% and looked like a
+failed port. It wasn't: the suite compared raw strings, while the benchmark's scorer normalises
+spacing (`E = m c ^ { 2 }` and `E = mc^2` are the same answer). With the benchmark's own scorer,
+the browser port came out slightly *ahead* of the Python reference (Results, below). Tesseract is
+the same engine compiled to WebAssembly with the same language file, self-hosted so the offline
+path never contacts a third party.
+
 ### Never quietly producing a worse document
 
 If the AI is unavailable when you press Convert, ConTeX asks before using the offline path. If the
@@ -183,13 +200,32 @@ rate-limited, or dies on page three.
   columns={['Suite', 'Checks']}
   numeric={[1]}
   rows={[
-    ['Validation and compile parity', '217'],
-    ['Multi-page merge (byte-identical to the Python version)', '211'],
-    ['Sessions, authentication and history', '111'],
-    ['Guest history, end to end in a browser', '37'],
-    ['Python suite (original implementation)', '180'],
+    ['Security: the Gemini endpoint cannot be steered', '165'],
+    ['Validation and compile parity', '226'],
+    ['Multi-page merge, byte-identical to the Python version', '211'],
+    ['Sessions, sign-in, history and deletion', '134'],
+    ['Guest history, end to end in a browser', '63'],
+    ['Input: file picker, drag-and-drop, camera, canvas', '36'],
+    ['The whole offline pipeline', '115'],
+    ['The app end to end, through its own front door', '49'],
+    ['Formula recogniser on the 75-image benchmark', '16'],
+    ['Python suite', '182'],
   ]}
-  note="The merge suite runs 33 page groups, including the 26 real benchmark outputs merged in pairs and triples; the edge version reproduces every one character for character."
+  note="1,197 checks in total, from the repository's last documented run. The merge suite reproduces all 33 page groups — including the 26 real benchmark outputs merged in pairs and triples — character for character."
+/>
+
+<MetricTable
+  caption="Offline fallback against the Python pipeline, same frozen benchmark"
+  columns={['Measure', 'Browser', 'Python']}
+  numeric={[1, 2]}
+  rows={[
+    ['Formulas: character accuracy', '91.88%', '90.26%'],
+    ['Formulas: exact (of 75)', '62 (83%)', '60 (80%)'],
+    ['Pages: text accuracy', '96.53%', '96.53%'],
+    ['Pages: structure', '100.00%', '100.00%'],
+    ['Pages: maths', '90.49%', '77.87%'],
+  ]}
+  note="Page scores are means over the whole fallback pipeline. The benchmark is synthetic pages with known ground truth, so these measure the port, not real-world handwriting. The maths gap is one image the browser segments into two expressions where Python merges them."
 />
 
 <MetricTable
@@ -213,5 +249,7 @@ rate-limited, or dies on page three.
 - **Some packages are deliberately absent** — `hyperref`, `tikz` and `cancel` aren't in the TeX
   subset. The preview drops them and says which, while the downloaded `.tex` stays exactly as the
   model wrote it.
-- **Next:** test on real low-end hardware rather than emulation, and add an accuracy benchmark for
-  the AI path on the same frozen corpus the fallback is already scored against.
+- **The benchmark is synthetic.** It proves the port is faithful, not how well either path reads
+  real handwriting.
+- **Next:** test on real low-end hardware rather than emulation, score the AI path on the same
+  frozen corpus the fallback already uses, and add a set of real handwritten pages.

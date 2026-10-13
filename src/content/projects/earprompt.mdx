@@ -51,13 +51,16 @@ import LatencyScale from '../../components/case/LatencyScale.astro';
 import BarList from '../../components/case/BarList.astro';
 import deviceInside from '../../assets/projects/earprompt/device-inside.jpg';
 import appSettings from '../../assets/projects/earprompt/app-settings.png';
+import appDashboard from '../../assets/projects/earprompt/app-dashboard.png';
 import testingSession from '../../assets/projects/earprompt/testing-session.jpg';
 import team from '../../assets/projects/earprompt/team.jpg';
 
-EarPrompt was my team's undergraduate thesis at the Polytechnic University of the Philippines:
-*EarPrompt: A Real-Time Conversational AI Assistant for Enhancing Verbal Communication*. Four of us
-are named researchers on it. This page covers the software, most of which I wrote; the research,
-evaluation and manuscript belong to the whole team.
+EarPrompt is a small device worn during a conversation. When the other person finishes speaking, it
+whispers one short coaching tip into the wearer's earbud: a nudge on how to respond, never a script.
+It was my team's undergraduate thesis at the Polytechnic University of the Philippines,
+*EarPrompt: A Real-Time Conversational AI Assistant for Enhancing Verbal Communication*, with four
+named researchers. This page covers the software, most of which I wrote; the research, evaluation
+and manuscript belong to the whole team.
 
 ## The problem
 
@@ -69,7 +72,8 @@ you to look away and ask.
 We wanted a cue that arrives *during* the conversation, privately, in the ear. That set the
 constraints:
 
-- **It must not speak for the user.** The tip says *how* to respond, never *what* to say.
+- **It must not speak for the user.** The tip says *how* to respond, never the words to say — the
+  prompt forbids writing a literal reply.
 - **It has to know who is talking.** A tip triggered by the wearer's own voice is noise.
 - **It must be short and in the user's language** — natural Taglish, one sentence.
 - **It runs on a battery** in a small enclosure, so the device can't host large models.
@@ -114,6 +118,16 @@ history. Accounts and session data live in Firebase.
   caption="Speech Tools: voiceprint registration, automatic vs push-button turn detection, and room-noise calibration."
 />
 
+Every turn is timed stage by stage, and the app shows it next to the voice analysis, so a slow
+session can be traced to transcription, the LLM or speech synthesis instead of guessed at.
+
+<Figure
+  number={4}
+  src={appDashboard}
+  alt="Two phone screens of the EarPrompt dashboard for the author's own test account. Left: Session Performance with total turn latency of 2,937 ms split into speech-to-text 1,667 ms, LLM 707 ms and text-to-speech 563 ms, then pitch 101.86 Hz and intensity 73.04 dB with plain-language labels. Right: jitter, shimmer and harmonics-to-noise ratio, an AI-written speech therapy assessment, and buttons to start listening and view analysis history."
+  caption="The user dashboard after a test session on my own account: per-stage latency for the turn, the acoustic measurements with plain-language readings, and an AI-written summary. Screens from the thesis (Figure 10)."
+/>
+
 ## My contribution
 
 - **The audio and AI pipeline** — voice-activity detection, speaker verification, transcription,
@@ -137,7 +151,12 @@ noticeably lower same-speaker scores than a model card would suggest: in real co
 wearer typically scored 0.40–0.65 against their centroid and conversation partners 0.05–0.25, so
 the threshold was set at 0.35.
 
-**Trade-off:** an utterance too short to embed reliably is treated as the wearer's. The system
+Short replies were the hard case. With a 0.8 s minimum, a quick "yes" or "okay" from the wearer
+was too short to embed, got filed as the other person, and set off a tip at exactly the wrong
+moment. I lowered the minimum to 0.4 s of speech after silence trimming, which covers those
+replies.
+
+**Trade-off:** anything still too short to embed reliably is treated as the wearer's. The system
 would rather stay quiet than whisper a tip at the wrong moment.
 
 ### Knowing when someone has finished speaking
@@ -152,8 +171,14 @@ the fallback when the detector is unavailable or undecided.
 Speech-to-text, the LLM and text-to-speech run one after another, so every hop counts. Tips are
 capped at one sentence (12 words, 30 tokens), and instead of waiting for the full LLM reply, the
 tokens are forwarded to the text-to-speech WebSocket as they arrive, so audio generation starts
-before the LLM has finished. A context-window overflow found in testing was fixed by truncating the
-conversation memory, which is why token use grows linearly with conversation length (Fig. 5).
+before the LLM has finished.
+
+Memory needed a bound too. A context-window overflow found in testing was fixed by updating the
+prompt-truncation logic, and the current code sends a compact summary rather than the transcript:
+at most ten keywords and two short snippets from the last five turns. The thesis's cost analysis
+(Fig. 6) shows
+the effect of keeping more turns: tokens grow linearly rather than running away, and even 25 turns
+of context cost under seven US cents per 30-minute session.
 
 ## Results
 
@@ -168,11 +193,11 @@ the end of the other person's speech to the tip being delivered.
     ['Session 1', '3,636 ms', '3,752 ms', '3,937 ms'],
     ['Session 2', '3,984 ms', '3,905 ms', '4,499 ms'],
     ['Session 3', '3,832 ms', '3,759 ms', '4,149 ms'],
-    ['Across sessions', '3,817 ms', '3,805 ms', '4,195 ms'],
+    ['Mean of sessions', '3,817 ms', '3,805 ms', '4,195 ms'],
   ]}
 />
 
-<Figure number={4} caption="EarPrompt's average and P95 latency against reference tiers for voice-AI systems, as cited in the thesis. It sits in the 3–5 s tier: slower than the industry median, well clear of the breakdown range.">
+<Figure number={5} caption="EarPrompt's average and P95 latency against reference tiers for voice-AI systems, as cited in the thesis. It sits in the 3–5 s tier: slower than the industry median, well clear of the breakdown range.">
   <LatencyScale
     label="Latency compared with voice-AI tiers"
     max={15}
@@ -189,7 +214,7 @@ the end of the other person's speech to the tip being delivered.
   />
 </Figure>
 
-<Figure number={5} caption="Average tokens per LLM request as the remembered conversation grows. Growth stays linear because older context is truncated.">
+<Figure number={6} caption="Average tokens per LLM request as more conversation turns are kept in context (thesis Table 16). Growth is linear, not runaway.">
   <BarList
     label="Tokens per request by conversation length"
     rows={[
@@ -208,10 +233,10 @@ the end of the other person's speech to the tip being delivered.
   numeric={[1, 2, 3]}
   rows={[
     ['5 turns', '399', '$0.000264', '$0.0238'],
-    ['10 turns', '689', '$0.000384', '$0.0346'],
-    ['15 turns', '978', '$0.000502', '$0.0452'],
+    ['10 turns', '689', '$0.000385', '$0.0346'],
+    ['15 turns', '978', '$0.000504', '$0.0454'],
     ['20 turns', '1,267', '$0.000622', '$0.0560'],
-    ['25 turns', '1,556', '$0.000741', '$0.0667'],
+    ['25 turns', '1,556', '$0.000740', '$0.0666'],
   ]}
 />
 
@@ -223,7 +248,7 @@ Two more measurements from the thesis:
   validate, the longest being the context-window overflow (2.5 h).
 
 <Figure
-  number={6}
+  number={7}
   src={testingSession}
   alt="A structured testing session in a small therapy room: a team member holds a laptop while two participants sit at a small table with the EarPrompt device and two phones."
   caption="A structured testing session. Participants' identities are kept confidential."
@@ -249,7 +274,7 @@ sessions.
   enclosure — the reliability complaints came from exactly these areas.
 
 <Figure
-  number={7}
+  number={8}
   src={team}
   alt="The four EarPrompt researchers in business attire after their thesis defense, holding bound manuscripts, the EarPrompt device and a laptop with a congratulations slide."
   caption="The EarPrompt team after the thesis defense."

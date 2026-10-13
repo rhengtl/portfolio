@@ -39,7 +39,7 @@ export const site = {
   github: 'https://github.com/RhenGTL',
   kaggle: 'https://www.kaggle.com/rhengtl',
   /** Set once the owner provides it (PORTFOLIO_SPEC §27.1). Icons render only when set. */
-  linkedin: undefined as string | undefined,
+  linkedin: 'https://www.linkedin.com/in/rhengtl/' as string | undefined,
   /** Public path of the résumé PDF; the button renders only if the file exists (§27.1). */
   resumePath: '/Rhenier-Gustilo-Resume.pdf',
   /** Public repo of this site; the footer "view source" link renders only when set. */
