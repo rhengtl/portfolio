@@ -22,7 +22,7 @@ export const site = {
   /** Used in <title> and social previews. */
   seoTitle: 'Rhenier Gustilo — Software Engineer (ML & Backend)',
   description:
-    'Rhenier Gustilo, Computer Engineering graduate building ML and backend systems: real-time speech AI, LLM services, and offline-first apps.',
+    'Rhenier Gustilo, software engineer and Computer Engineering graduate building machine-learning systems, backend services and apps end to end.',
   mission:
     'I build complete software, from machine-learning models and LLM features to the backend services, APIs and apps around them, and I test and measure what I ship.',
   education: {
@@ -224,7 +224,7 @@ export const skillGroups: SkillGroup[] = [
 export const about = {
   paragraphs: [
     "I’m a Computer Engineering graduate from the Polytechnic University of the Philippines, where I specialized in machine learning.",
-    'The part I enjoy most comes after the model works in a notebook: making it answer in real time on a Raspberry Pi, putting an LLM behind an API that can’t be misused, or keeping an app useful with no signal.',
+    'What I enjoy most is the step from “it works” to “it holds up”: turning a model or prototype into dependable software, from the services and APIs behind it to the interface people use.',
     'My internships in systems deployment and technical support showed me how things fail in the field, so my projects ship with tests, validation logs and fallbacks.',
   ],
   thesis: {
