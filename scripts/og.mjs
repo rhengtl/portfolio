@@ -39,7 +39,7 @@ const cards = [
     file: 'default.png',
     label: 'Software Engineer · ML & Backend',
     title: 'Rhenier Gustilo',
-    lead: 'I build machine-learning systems end to end, from models in Python to APIs and real hardware.',
+    lead: 'I build complete software, from ML models and LLM features to the backends, APIs and apps around them.',
     metric: 'Python · PyTorch · LLM APIs · FastAPI · TypeScript · PostgreSQL',
     image: 'src/assets/headshot.jpg',
     portrait: true,

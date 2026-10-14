@@ -24,7 +24,7 @@ export const site = {
   description:
     'Rhenier Gustilo, Computer Engineering graduate building ML and backend systems: real-time speech AI, LLM services, and offline-first apps.',
   mission:
-    'I build AI-powered software end to end: real-time speech pipelines on a Raspberry Pi, LLM services at the edge, and offline-first apps that keep working without a signal.',
+    'I build complete software, from machine-learning models and LLM features to the backend services, APIs and apps around them, and I test and measure what I ship.',
   education: {
     degree: 'BS Computer Engineering',
     specialization: 'Machine Learning specialization',
