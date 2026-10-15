@@ -21,3 +21,9 @@ Thumbs.db
 
 # vercel
 .vercel/
+
+# Private, never published: the résumé sources (incl. phone number and application copies),
+# the design spec and the résumé research plan. The public résumé PDF in public/ is committed.
+resume/
+PORTFOLIO_SPEC.md
+resume-research-and-implementation-plan.md

@@ -6,7 +6,7 @@ import { getProjects, hasCaseStudy, type Project } from '@/lib/projects';
 export async function getStaticPaths() {
   const studies = (await getProjects()).filter(hasCaseStudy);
   return studies.map((project, i) => {
-    // PORTFOLIO_SPEC §9.2: every case study opens with a TL;DR.
+    // Every case study opens with a TL;DR.
     if (!project.data.tldr) {
       throw new Error(`Case study "${project.id}" has a body but no tldr in its frontmatter.`);
     }

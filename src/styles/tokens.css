@@ -1,5 +1,5 @@
 /*
- * Design tokens — PORTFOLIO_SPEC §15 (layout/spacing), §16 (type), §17 (colour).
+ * Design tokens: layout and spacing, type, colour.
  * Light is the reference theme. Dark applies when the OS prefers it, unless the
  * visitor chose a theme explicitly (data-theme on <html>, set by ThemeToggle).
  */

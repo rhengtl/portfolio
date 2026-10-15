@@ -3,7 +3,7 @@ import { defineConfig, fontProviders } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 
-// Canonical origin (PORTFOLIO_SPEC §25.0). If rhengtl.tech lapses, switch this
+// Canonical origin. If rhengtl.tech lapses, switch this
 // to https://rhengtl.vercel.app — it is the only place the origin is defined.
 const SITE = 'https://rhengtl.tech';
 
@@ -23,7 +23,7 @@ export default defineConfig({
   // No fenced code blocks on the site, and Shiki's inline styles conflict with the CSP below.
   markdown: { syntaxHighlight: false },
   integrations: [mdx(), sitemap({ filter: (page) => !page.endsWith('/404') })],
-  // Content-Security-Policy as a per-page <meta> (PORTFOLIO_SPEC §R security). Astro hashes every
+  // Content-Security-Policy as a per-page <meta>. Astro hashes every
   // inline script and style it emits. Chart marks are positioned with style="…" attributes, so
   // only style *attributes* may be inline; <style>/<script> elements still need a hash.
   security: {

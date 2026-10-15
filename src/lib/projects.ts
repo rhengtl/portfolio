@@ -28,7 +28,7 @@ export function projectLabel(project: Project): string {
   return [STATUS_LABEL[status], scope, yearRange(timeline)].join(' · ');
 }
 
-/** A case-study page exists only when the entry has a body (PORTFOLIO_SPEC §9.2). */
+/** A case-study page exists only when the entry has a body. */
 export function hasCaseStudy(project: Project): boolean {
   return Boolean(project.body?.trim());
 }

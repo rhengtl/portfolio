@@ -1,5 +1,5 @@
 /**
- * Personal data and site-wide settings — PORTFOLIO_SPEC §6 and §18.3.
+ * Personal data and site-wide settings.
  * This is the one place to edit identity, links and navigation.
  */
 
@@ -38,7 +38,7 @@ export const site = {
   email: 'rheniergustilo06@gmail.com',
   github: 'https://github.com/RhenGTL',
   kaggle: 'https://www.kaggle.com/rhengtl',
-  /** Set once the owner provides it (PORTFOLIO_SPEC §27.1). Icons render only when set. */
+  /** Set once the owner provides it. Icons render only when set. */
   linkedin: 'https://www.linkedin.com/in/rhengtl/' as string | undefined,
   /** Public path of the résumé PDF; the button renders only if the file exists (§27.1). */
   resumePath: '/Rhenier-Gustilo-Resume.pdf',
@@ -61,7 +61,7 @@ export const socials: SocialLink[] = [
 ];
 
 /* ------------------------------------------------------------------ */
-/* Home-page content (PORTFOLIO_SPEC §9.1, §12, §13, §14)              */
+/* Home-page content              */
 /* ------------------------------------------------------------------ */
 
 /** Project ids (file names in src/content/projects) used for "used in" links. */

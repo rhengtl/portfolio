@@ -1,5 +1,5 @@
 /**
- * Project content collection — PORTFOLIO_SPEC §18.2.
+ * Project content collection.
  * The schema enforces the content rules: a published flagship must have a cover with
  * alt text and at least one metric, and every project needs a public evidence link.
  */
@@ -46,7 +46,7 @@ const projects = defineCollection({
           .default({}),
         cover: image().optional(),
         coverAlt: z.string().optional(),
-        /** Case-study TL;DR (PORTFOLIO_SPEC §9.2 part 2). Required when the entry has a body. */
+        /** Case-study TL;DR. Required when the entry has a body. */
         tldr: z
           .object({
             problem: z.string(),

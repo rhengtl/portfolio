@@ -19,8 +19,8 @@ timeline:
 stack: [JavaScript, Cloudflare Workers, Gemini API, WebAssembly, Firebase]
 metrics:
   - label: Automated checks
-    value: '1,197'
-    context: across 10 test suites
+    value: '1,015'
+    context: across 9 test suites
   - label: In-browser LaTeX compile
     value: 34 ms
     context: warm, desktop
@@ -41,7 +41,7 @@ tldr:
     client can’t touch; the browser compiles the LaTeX itself with pdfTeX in WebAssembly, and
     falls back to on-device OCR when the AI is unavailable.
   result: >-
-    Live at contex.rhengtl.tech with 1,197 automated checks across 10 suites, a 34 ms warm
+    Live at contex.rhengtl.tech with 1,015 automated checks across 9 suites, a 34 ms warm
     in-browser compile, and a pre-launch security audit that closed a prompt-injection hole and a
     TeX file-read bypass.
 ---
@@ -210,9 +210,8 @@ rate-limited, or dies on page three.
     ['The whole offline pipeline', '115'],
     ['The app end to end, through its own front door', '49'],
     ['Formula recogniser on the 75-image benchmark', '16'],
-    ['Python suite', '182'],
   ]}
-  note="1,197 checks in total, from the repository’s last documented run. The merge suite reproduces all 33 page groups — including the 26 real benchmark outputs merged in pairs and triples — character for character."
+  note="1,015 checks in total, from the repository’s documented run (12 Oct 2026). The 182-test Python suite of the original Flask version was retired with it in September. The merge suite reproduces all 33 page groups — including the 26 real benchmark outputs merged in pairs and triples — character for character."
 />
 
 <MetricTable

@@ -1,30 +1,18 @@
-// Generates the 1200×630 Open Graph images in public/og/ (PORTFOLIO_SPEC §22).
+// Generates the 1200×630 Open Graph images in public/og/.
 // Run after `npm run build` (it reads the self-hosted font files from dist/):
 //   node scripts/og.mjs
 // Re-run whenever a title, tagline, headline metric or cover image changes.
-import { readFileSync, mkdirSync } from 'node:fs';
+import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { chromium } from 'playwright-core';
 import sharp from 'sharp';
+import { plexFontFaces } from './lib/fonts.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 const out = resolve(root, 'public/og');
 mkdirSync(out, { recursive: true });
 
-// Font files are content-hashed by Astro; find them through the built home page.
-const home = readFileSync(resolve(root, 'dist/index.html'), 'utf8');
-const fontFaces = [
-  ...home.matchAll(
-    /font-family:"(IBM Plex (?:Sans|Mono))-[^"]*";src:url\("([^"]+)"\)[^}]*?font-weight:(\d+)/g,
-  ),
-]
-  .map(([, family, url, weight]) => {
-    // Inlined: a page made with setContent() may not read local files.
-    const data = readFileSync(resolve(root, 'dist', url.replace(/^\//, ''))).toString('base64');
-    return `@font-face{font-family:"${family}";src:url(data:font/woff2;base64,${data}) format("woff2");font-weight:${weight}}`;
-  })
-  .join('\n');
-if (!fontFaces) throw new Error('No fonts found in dist/index.html — run `npm run build` first.');
+const fontFaces = plexFontFaces(root);
 
 // Optional crop ({ left, top, width, height } in source pixels) keeps small UI legible at card size.
 const asset = async (p, crop) => {
@@ -57,7 +45,7 @@ const cards = [
     label: 'Live · Team of 4 · 2025–⁠26',
     title: 'ConTeX',
     lead: 'Photograph handwriting or drop in a PDF and get LaTeX back, compiled in your browser.',
-    metric: '1,197 automated checks',
+    metric: '1,015 automated checks',
     image: 'src/assets/projects/contex/cover.png',
     crop: { left: 220, top: 150, width: 1480, height: 925 },
   },
