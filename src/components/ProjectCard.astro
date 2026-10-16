@@ -1,5 +1,6 @@
 ---
 /** Featured card for projects 4–6: text only, same evidence rules. */
+import { markTagalog } from '@/lib/lang';
 import Icon from './Icon.astro';
 import TagList from './TagList.astro';
 import { evidenceLinks, projectAnchor, projectLabel, type Project } from '@/lib/projects';
@@ -19,29 +20,26 @@ const links = evidenceLinks(project);
 <article class="card" id={projectAnchor(project.id)} aria-labelledby={headingId}>
   <p class="label">{projectLabel(project)}</p>
   <h3 id={headingId}>{data.title}</h3>
-  <p class="card__tagline">{data.tagline}</p>
-  <p class="card__summary">{data.summary}</p>
-  {
-    metric && (
-      <p class="card__metric">
-        <span class="card__metric-value tabular">{metric.value}</span>
-        <span>{metricText}</span>
-      </p>
-    )
-  }
+  <p class="card__tagline" set:html={markTagalog(data.tagline)} />
+  <p class="card__summary" set:html={markTagalog(data.summary)} />
+  {metric && (
+    <p class="card__metric">
+      <span class="card__metric-value tabular">{metric.value}</span>
+      <span>{metricText}</span>
+    </p>
+  )}
   <TagList items={data.stack} label={`${data.title} technologies`} />
   <ul class="card__links" aria-label={`${data.title} links`}>
-    {
-      links.map((link) => (
-        <li>
-          <a href={link.href}>
-            {link.label}
-            <Icon name="external" size={14} />
-          </a>
-        </li>
-      ))
-    }
+    {links.map((link) => (
+      <li>
+        <a href={link.href}>
+          {link.label}
+          <Icon name="external" size={14} />
+        </a>
+      </li>
+    ))}
   </ul>
+  {data.liveNote && <p class="card__note">{data.liveNote}</p>}
 </article>
 
 <style>
@@ -92,6 +90,12 @@ const links = evidenceLinks(project);
     font-family: var(--font-code);
     font-weight: 500;
     color: var(--accent);
+  }
+
+  .card__note {
+    margin-top: calc(-1 * var(--space-2));
+    color: var(--muted);
+    font-size: var(--text-small);
   }
 
   .card__links {

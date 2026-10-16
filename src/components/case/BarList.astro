@@ -20,20 +20,18 @@ const max = Math.max(...rows.map((r) => r.value));
 ---
 
 <ul class="bars" aria-label={label}>
-  {
-    rows.map((row) => (
-      <li title={`${row.label}: ${row.display ?? row.value}${unit}`}>
-        <span class="bars__label">{row.label}</span>
-        <span class="bars__track" aria-hidden="true">
-          <span class="bars__bar" style={`width: ${((row.value / max) * 100).toFixed(1)}%`} />
-        </span>
-        <span class="bars__value tabular">
-          {row.display ?? row.value}
-          {unit}
-        </span>
-      </li>
-    ))
-  }
+  {rows.map((row) => (
+    <li title={`${row.label}: ${row.display ?? row.value}${unit}`}>
+      <span class="bars__label">{row.label}</span>
+      <span class="bars__track" aria-hidden="true">
+        <span class="bars__bar" style={`width: ${((row.value / max) * 100).toFixed(1)}%`} />
+      </span>
+      <span class="bars__value tabular">
+        {row.display ?? row.value}
+        {unit}
+      </span>
+    </li>
+  ))}
 </ul>
 
 <style>

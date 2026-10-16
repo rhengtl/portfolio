@@ -13,27 +13,27 @@ interface Props {
 }
 
 const { caption, columns, rows, numeric = [], note } = Astro.props;
-const id = `table-${caption.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)}`;
+const id = `table-${caption
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, '-')
+  .slice(0, 40)}`;
 ---
 
 <div class="metric">
-<div class="metric-table" role="region" aria-labelledby={id} tabindex="0">
-  <table>
-    <caption id={id}>{caption}</caption>
-    <thead>
-      <tr>
-        {
-          columns.map((col, i) => (
+  <div class="metric-table" role="region" aria-labelledby={id} tabindex="0">
+    <table>
+      <caption id={id}>{caption}</caption>
+      <thead>
+        <tr>
+          {columns.map((col, i) => (
             <th scope="col" class:list={{ num: numeric.includes(i) }}>
               {col}
             </th>
-          ))
-        }
-      </tr>
-    </thead>
-    <tbody>
-      {
-        rows.map((row) => (
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row) => (
           <tr>
             {row.map((cell, i) =>
               i === 0 ? (
@@ -43,12 +43,11 @@ const id = `table-${caption.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 4
               ),
             )}
           </tr>
-        ))
-      }
-    </tbody>
-  </table>
-</div>
-{note && <p class="metric-table__note">{note}</p>}
+        ))}
+      </tbody>
+    </table>
+  </div>
+  {note && <p class="metric-table__note">{note}</p>}
 </div>
 
 <style>

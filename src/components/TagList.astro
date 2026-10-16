@@ -8,7 +8,9 @@ const { items, label = 'Technologies' } = Astro.props;
 ---
 
 <ul class="tags" aria-label={label}>
-  {items.map((item) => <li>{item}</li>)}
+  {items.map((item) => (
+    <li>{item}</li>
+  ))}
 </ul>
 
 <style>

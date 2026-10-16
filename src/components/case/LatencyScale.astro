@@ -29,48 +29,44 @@ const ticks = Array.from({ length: Math.floor(max / 3) + 1 }, (_, i) => i * 3);
 
 <div class="lat" role="group" aria-label={label}>
   <ul class="lat__markers" aria-label="Measured">
-    {
-      markers.map((m) => (
-        <li style={`left: ${pct(m.value)}`} title={`${m.label}: ${m.value.toFixed(2)} s`}>
-          <span class="lat__marker-label">
-            {m.label} <strong class="tabular">{m.value.toFixed(1)} s</strong>
-          </span>
-        </li>
-      ))
-    }
+    {markers.map((m) => (
+      <li style={`left: ${pct(m.value)}`} title={`${m.label}: ${m.value.toFixed(2)} s`}>
+        <span class="lat__marker-label">
+          {m.label} <strong class="tabular">{m.value.toFixed(1)} s</strong>
+        </span>
+      </li>
+    ))}
   </ul>
 
   <div class="lat__track" aria-hidden="true">
-    {
-      bands.map((b, i) => (
-        <span
-          class={`lat__band lat__band--${i}`}
-          style={`left: ${pct(b.from)}; width: ${pct(b.to - b.from)}`}
-          title={`${b.label}: ${b.from}–${b.to} s`}
-        />
-      ))
-    }
-    {markers.map((m) => <span class="lat__pin" style={`left: ${pct(m.value)}`} />)}
+    {bands.map((b, i) => (
+      <span
+        class={`lat__band lat__band--${i}`}
+        style={`left: ${pct(b.from)}; width: ${pct(b.to - b.from)}`}
+        title={`${b.label}: ${b.from}–${b.to} s`}
+      />
+    ))}
+    {markers.map((m) => (
+      <span class="lat__pin" style={`left: ${pct(m.value)}`} />
+    ))}
   </div>
 
   <div class="lat__axis" aria-hidden="true">
-    {ticks.map((t) => <span style={`left: ${pct(t)}`}>{t} s</span>)}
+    {ticks.map((t) => (
+      <span style={`left: ${pct(t)}`}>{t} s</span>
+    ))}
   </div>
 
   <ol class="lat__legend" aria-label="Reference tiers">
-    {
-      bands.map((b, i) => (
-        <li>
-          <span class={`lat__swatch lat__band--${i}`} aria-hidden="true" />
-          <span>
-            <strong class="tabular">
-              {b.from === 0 ? `under ${b.to}` : `${b.from}–${b.to}`} s
-            </strong>{' '}
-            {b.label}
-          </span>
-        </li>
-      ))
-    }
+    {bands.map((b, i) => (
+      <li>
+        <span class={`lat__swatch lat__band--${i}`} aria-hidden="true" />
+        <span>
+          <strong class="tabular">{b.from === 0 ? `under ${b.to}` : `${b.from}–${b.to}`} s</strong>{' '}
+          {b.label}
+        </span>
+      </li>
+    ))}
   </ol>
 </div>
 

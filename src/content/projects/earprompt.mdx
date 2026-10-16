@@ -2,7 +2,7 @@
 title: EarPrompt
 tagline: A wearable that listens to a conversation and whispers one short tip on how to respond.
 seoTitle: Real-time AI conversation coach
-description: "How I built EarPrompt’s speech pipeline: speaker verification, Taglish LLM tips and streaming text-to-speech on a Raspberry Pi 5, at 3.8 s average latency."
+description: 'How I built EarPrompt’s speech pipeline: speaker verification, Taglish LLM tips and streaming text-to-speech on a Raspberry Pi 5, at 3.8 s average latency.'
 summary: >-
   Thesis prototype: a Raspberry Pi 5 earpiece that tells the wearer’s voice apart from the other
   speaker, generates a Taglish coaching tip with an LLM and streams it to Bluetooth earbuds, with a
@@ -61,7 +61,7 @@ import team from '../../assets/projects/earprompt/team.jpg';
 EarPrompt is a small device worn during a conversation. When the other person finishes speaking, it
 whispers one short coaching tip into the wearer’s earbud: a nudge on how to respond, never a script.
 It was my team’s undergraduate thesis at the Polytechnic University of the Philippines,
-*EarPrompt: A Real-Time Conversational AI Assistant for Enhancing Verbal Communication*, with four
+_EarPrompt: A Real-Time Conversational AI Assistant for Enhancing Verbal Communication_, with four
 named researchers. This page covers the software, most of which I wrote; the research, evaluation
 and manuscript belong to the whole team.
 
@@ -72,10 +72,10 @@ For someone working with a speech-language pathologist, that moment is exactly w
 useful and least available: practice apps give feedback after the fact, and phone assistants need
 you to look away and ask.
 
-We wanted a cue that arrives *during* the conversation, privately, in the ear. That set the
+We wanted a cue that arrives _during_ the conversation, privately, in the ear. That set the
 constraints:
 
-- **It must not speak for the user.** The tip says *how* to respond, never the words to say — the
+- **It must not speak for the user.** The tip says _how_ to respond, never the words to say — the
   prompt forbids writing a literal reply.
 - **It has to know who is talking.** A tip triggered by the wearer’s own voice is noise.
 - **It must be short and in the user’s language** — natural Taglish, one sentence.
@@ -83,15 +83,43 @@ constraints:
 
 ## How it works
 
-<Figure number={1} caption="One conversational turn, from the other person’s speech to a tip in the wearer’s ear." wide>
+<Figure
+  number={1}
+  caption="One conversational turn, from the other person’s speech to a tip in the wearer’s ear."
+  wide
+>
   <FlowSteps
     label="EarPrompt pipeline"
     steps={[
-      { title: 'Listen', detail: 'An I²S microphone streams audio. A neural voice-activity detector, checked against a room-noise calibration, decides when an utterance has ended.', tech: 'Silero VAD · energy fallback' },
-      { title: 'Who spoke?', detail: 'A speaker embedding of the utterance is compared with the wearer’s registered voiceprint. Only the other person’s speech triggers a tip.', tech: 'SpeechBrain ECAPA-TDNN' },
-      { title: 'Transcribe', detail: 'Silence is trimmed before upload, then the utterance is transcribed.', tech: 'ElevenLabs Scribe' },
-      { title: 'Coach', detail: 'An LLM writes one Taglish tip of 12 words or fewer, in the chosen tone, using a compact memory of recent turns.', tech: 'OpenAI GPT-4.1 mini' },
-      { title: 'Speak', detail: 'LLM tokens are streamed into text-to-speech as they arrive, and the audio plays in a Bluetooth earbud.', tech: 'ElevenLabs Flash v2.5' },
+      {
+        title: 'Listen',
+        detail:
+          'An I²S microphone streams audio. A neural voice-activity detector, checked against a room-noise calibration, decides when an utterance has ended.',
+        tech: 'Silero VAD · energy fallback',
+      },
+      {
+        title: 'Who spoke?',
+        detail:
+          'A speaker embedding of the utterance is compared with the wearer’s registered voiceprint. Only the other person’s speech triggers a tip.',
+        tech: 'SpeechBrain ECAPA-TDNN',
+      },
+      {
+        title: 'Transcribe',
+        detail: 'Silence is trimmed before upload, then the utterance is transcribed.',
+        tech: 'ElevenLabs Scribe',
+      },
+      {
+        title: 'Coach',
+        detail:
+          'An LLM writes one Taglish tip of 12 words or fewer, in the chosen tone, using a compact memory of recent turns.',
+        tech: 'OpenAI GPT-4.1 mini',
+      },
+      {
+        title: 'Speak',
+        detail:
+          'LLM tokens are streamed into text-to-speech as they arrive, and the audio plays in a Bluetooth earbud.',
+        tech: 'ElevenLabs Flash v2.5',
+      },
     ]}
   />
 </Figure>
@@ -115,7 +143,7 @@ captioned on screen as it arrived.
 Around that loop, the device runs a small **Flask API** that the companion app uses to start and
 stop listening, switch between automatic and push-button turn detection, register a voiceprint,
 calibrate room noise, change the voice and tone, and read battery level from an INA219 sensor on
-the power board. The wearer’s *own* speech isn’t wasted: it goes to a voice-analysis module that
+the power board. The wearer’s _own_ speech isn’t wasted: it goes to a voice-analysis module that
 measures pitch, intensity, jitter, shimmer and harmonics-to-noise ratio with Praat (via Parselmouth)
 and compares them with the user’s baseline.
 
@@ -163,7 +191,7 @@ session can be traced to transcription, the LLM or speech synthesis instead of g
 
 ### Telling the wearer apart from the other person
 
-A tip should follow the *other* person’s turn. Each utterance is embedded with an ECAPA-TDNN model
+A tip should follow the _other_ person’s turn. Each utterance is embedded with an ECAPA-TDNN model
 and compared, by cosine similarity, with the centroid of the wearer’s enrollment embeddings
 (outliers are filtered out at registration). Scripted enrollment and natural conversation produce
 noticeably lower same-speaker scores than a model card would suggest: in real conversations the
@@ -201,7 +229,7 @@ of context cost under seven US cents per 30-minute session.
 
 ## Results
 
-All figures are from the thesis evaluation. Latency is the *Prompt Delivery Window*: the time from
+All figures are from the thesis evaluation. Latency is the _Prompt Delivery Window_: the time from
 the end of the other person’s speech to the tip being delivered.
 
 <MetricTable
@@ -216,7 +244,10 @@ the end of the other person’s speech to the tip being delivered.
   ]}
 />
 
-<Figure number={6} caption="EarPrompt’s average and P95 latency against reference tiers for voice-AI systems, as cited in the thesis. It sits in the 3–5 s tier: slower than the industry median, well clear of the breakdown range.">
+<Figure
+  number={6}
+  caption="EarPrompt’s average and P95 latency against reference tiers for voice-AI systems, as cited in the thesis. It sits in the 3–5 s tier: slower than the industry median, well clear of the breakdown range."
+>
   <LatencyScale
     label="Latency compared with voice-AI tiers"
     max={15}
@@ -233,7 +264,10 @@ the end of the other person’s speech to the tip being delivered.
   />
 </Figure>
 
-<Figure number={7} caption="Average tokens per LLM request as more conversation turns are kept in context (thesis Table 16). Growth is linear, not runaway.">
+<Figure
+  number={7}
+  caption="Average tokens per LLM request as more conversation turns are kept in context (thesis Table 16). Growth is linear, not runaway."
+>
   <BarList
     label="Tokens per request by conversation length"
     rows={[
@@ -265,10 +299,10 @@ Two more measurements from the thesis:
   peak from component ratings, giving about **3 hours** at average load on the two 18650 cells.
 - **Maintainability:** five logged fixes took an average of **1.6 hours** to diagnose, patch and
   validate, the longest being the context-window overflow (2.5 h).
-The acceptability survey used a 4-point scale. The overall mean was **2.81 ("High")**. Accuracy of
-the tips scored highest (3.00 from both groups). Reliability scored lowest (2.64): the patient rated
-it "Low" (2.40), citing glitches, unclear malfunction alerts and weaker performance in long
-sessions.
+  The acceptability survey used a 4-point scale. The overall mean was **2.81 ("High")**. Accuracy of
+  the tips scored highest (3.00 from both groups). Reliability scored lowest (2.64): the patient rated
+  it "Low" (2.40), citing glitches, unclear malfunction alerts and weaker performance in long
+  sessions.
 
 ## Limitations and what I’d do next
 

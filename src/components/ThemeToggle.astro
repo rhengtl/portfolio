@@ -16,8 +16,7 @@ import Icon from './Icon.astro';
   const root = document.documentElement;
   const media = window.matchMedia('(prefers-color-scheme: dark)');
 
-  const isDark = () =>
-    root.dataset.theme === 'dark' || (!root.dataset.theme && media.matches);
+  const isDark = () => root.dataset.theme === 'dark' || (!root.dataset.theme && media.matches);
 
   const sync = (button: HTMLButtonElement) => {
     button.setAttribute('aria-pressed', String(isDark()));

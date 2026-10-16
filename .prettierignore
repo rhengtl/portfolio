@@ -3,3 +3,7 @@ dist/
 node_modules/
 package-lock.json
 PORTFOLIO_SPEC.md
+resume/
+resume-research-and-implementation-plan.md
+# Whitespace-sensitive inline lists (CSS-generated separators); formatting would add visible spaces.
+src/components/SkillsGrid.astro

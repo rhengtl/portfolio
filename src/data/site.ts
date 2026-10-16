@@ -31,10 +31,19 @@ export const site = {
     school: 'Polytechnic University of the Philippines',
     location: 'Sta. Mesa, Manila',
     graduated: 'September 2026',
-    honors: "President’s Lister",
+    honors: 'President’s Lister',
   },
-  availability: 'Based in the Philippines · open to on-site roles in the Philippines and remote roles',
-  coreStack: ['Python', 'PyTorch', 'scikit-learn', 'LLM APIs', 'FastAPI', 'TypeScript', 'PostgreSQL'],
+  availability:
+    'Based in the Philippines · open to on-site roles in the Philippines and remote roles',
+  coreStack: [
+    'Python',
+    'PyTorch',
+    'scikit-learn',
+    'LLM APIs',
+    'FastAPI',
+    'TypeScript',
+    'PostgreSQL',
+  ],
   email: 'rheniergustilo06@gmail.com',
   github: 'https://github.com/RhenGTL',
   kaggle: 'https://www.kaggle.com/rhengtl',
@@ -43,7 +52,7 @@ export const site = {
   /** Public path of the résumé PDF; the button renders only if the file exists (§27.1). */
   resumePath: '/Rhenier-Gustilo-Resume.pdf',
   /** Public repo of this site; the footer "view source" link renders only when set. */
-  sourceRepo: undefined as string | undefined,
+  sourceRepo: 'https://github.com/rhengtl/portfolio' as string | undefined,
   lastUpdated: '2026-10',
 } as const;
 
@@ -65,7 +74,8 @@ export const socials: SocialLink[] = [
 /* ------------------------------------------------------------------ */
 
 /** Project ids (file names in src/content/projects) used for "used in" links. */
-export type ProjectId = 'earprompt' | 'contex' | 'tindabot' | 'tomatosense' | 'textsnip' | 'clickmap';
+export type ProjectId =
+  'earprompt' | 'contex' | 'tindabot' | 'tomatosense' | 'textsnip' | 'clickmap';
 
 export interface ExperienceEntry {
   role: string;
@@ -168,7 +178,18 @@ export const skillGroups: SkillGroup[] = [
   },
   {
     title: 'Languages',
-    items: ['Python', 'TypeScript', 'JavaScript', 'SQL', 'Dart', 'C#', 'Kotlin', 'C++', 'R', 'Verilog HDL'],
+    items: [
+      'Python',
+      'TypeScript',
+      'JavaScript',
+      'SQL',
+      'Dart',
+      'C#',
+      'Kotlin',
+      'C++',
+      'R',
+      'Verilog HDL',
+    ],
   },
   {
     title: 'Frontend & mobile',
@@ -223,7 +244,7 @@ export const skillGroups: SkillGroup[] = [
 
 export const about = {
   paragraphs: [
-    "I’m a Computer Engineering graduate from the Polytechnic University of the Philippines, where I specialized in machine learning.",
+    'I’m a Computer Engineering graduate from the Polytechnic University of the Philippines, where I specialized in machine learning.',
     'What I enjoy most is the step from “it works” to “it holds up”: turning a model or prototype into dependable software, from the services and APIs behind it to the interface people use.',
     'My internships in systems deployment and technical support showed me how things fail in the field, so my projects ship with tests, validation logs and fallbacks.',
   ],
@@ -296,8 +317,10 @@ export const credentials: Credential[] = [
   },
 ];
 
-export const activities = ['Technical Committee, “Beyond the CpEctrum” seminar series, PUP Computer Engineering (2026)'];
+export const activities = [
+  'Technical Committee, “Beyond the CpEctrum” seminar series, PUP Computer Engineering (2026)',
+];
 
 export const contact = {
-  lead: "I’m looking for software engineering, machine learning and backend roles, in the Philippines or remote. Email is the fastest way to reach me.",
+  lead: 'I’m looking for software engineering, machine learning and backend roles, in the Philippines or remote. Email is the fastest way to reach me.',
 };

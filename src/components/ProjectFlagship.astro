@@ -4,6 +4,7 @@
  * Mobile order: label → title → one-liner → media → summary → results → tags → links.
  * Desktop: text (5/12) beside media (7/12), always on the same side.
  */
+import { markTagalog } from '@/lib/lang';
 import { Picture } from 'astro:assets';
 import Icon from './Icon.astro';
 import TagList from './TagList.astro';
@@ -28,72 +29,68 @@ const links = evidenceLinks(project);
 
 <article class="flagship" id={projectAnchor(project.id)} aria-labelledby={headingId}>
   <p class="label flagship__label">{projectLabel(project)}</p>
-  <h3 class="flagship__title" id={headingId}>{data.title}</h3>
-  <p class="flagship__tagline">{data.tagline}</p>
+  <h3 class="flagship__title" id={headingId}>
+    {data.title}
+  </h3>
+  <p class="flagship__tagline" set:html={markTagalog(data.tagline)} />
 
-  {
-    data.cover && data.coverAlt && (
-      <figure class="flagship__media">
-        <Picture
-          src={data.cover}
-          alt={data.coverAlt}
-          formats={['avif', 'webp']}
-          layout="constrained"
-          width={800}
-          height={500}
-          sizes="(min-width: 70rem) 640px, (min-width: 64rem) 56vw, calc(100vw - 2rem)"
-          style={`view-transition-name: cover-${project.id}`}
-          fit="cover"
-          quality={70}
-        />
-      </figure>
-    )
-  }
+  {data.cover && data.coverAlt && (
+    <figure class="flagship__media">
+      <Picture
+        src={data.cover}
+        alt={data.coverAlt}
+        formats={['avif', 'webp']}
+        layout="constrained"
+        width={800}
+        height={500}
+        sizes="(min-width: 70rem) 640px, (min-width: 64rem) 56vw, calc(100vw - 2rem)"
+        style={`view-transition-name: cover-${project.id}`}
+        fit="cover"
+        quality={70}
+      />
+    </figure>
+  )}
 
-  <p class="flagship__summary">{data.summary}</p>
+  <p class="flagship__summary" set:html={markTagalog(data.summary)} />
 
-  {
-    data.metrics.length > 0 && (
-      <dl class="flagship__metrics">
-        {data.metrics.map((metric) => (
-          <div>
-            <dt class="label">{metric.label}</dt>
-            <dd>
-              <span class="flagship__metric-value tabular">{metric.value}</span>
-              {metric.context && <span class="flagship__metric-context">{metric.context}</span>}
-            </dd>
-          </div>
-        ))}
-      </dl>
-    )
-  }
+  {data.metrics.length > 0 && (
+    <dl class="flagship__metrics">
+      {data.metrics.map((metric) => (
+        <div>
+          <dt class="label">{metric.label}</dt>
+          <dd>
+            <span class="flagship__metric-value tabular">{metric.value}</span>
+            {metric.context && <span class="flagship__metric-context">{metric.context}</span>}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  )}
 
-  <p class="flagship__role"><span class="label">Role</span> {data.role}</p>
+  <p class="flagship__role">
+    <span class="label">Role</span> {data.role}
+  </p>
 
   <div class="flagship__tags">
     <TagList items={data.stack} label={`${data.title} technologies`} />
   </div>
 
   <ul class="flagship__links" aria-label={`${data.title} links`}>
-    {
-      caseStudy && (
-        <li>
-          <a href={`/projects/${project.id}`} class="flagship__primary">
-            Read case study <Icon name="arrow-right" size={16} />
-          </a>
-        </li>
-      )
-    }
-    {
-      links.map((link) => (
-        <li>
-          <a href={link.href}>
-            {link.label}
-            <Icon name="external" size={14} />
-          </a>
-        </li>
-      ))
-    }
+    {caseStudy && (
+      <li>
+        <a href={`/projects/${project.id}`} class="flagship__primary">
+          Read case study <Icon name="arrow-right" size={16} />
+        </a>
+      </li>
+    )}
+    {links.map((link) => (
+      <li>
+        <a href={link.href}>
+          {link.label}
+          <Icon name="external" size={14} />
+        </a>
+      </li>
+    ))}
   </ul>
 </article>
 

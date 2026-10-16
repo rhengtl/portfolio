@@ -11,26 +11,22 @@ const profiles = socials.filter((s) => s.icon !== 'mail');
   <p class="contact__lead prose">{contact.lead}</p>
   <CopyEmail />
   <ul class="contact__links" aria-label="Other ways to reach me">
-    {
-      profiles.map((link) => (
-        <li>
-          <a href={link.href} rel="me">
-            <Icon name={link.icon} size={18} />
-            {link.label}
-          </a>
-        </li>
-      ))
-    }
-    {
-      hasResume && (
-        <li>
-          <a href={site.resumePath} target="_blank" rel="noopener noreferrer">
-            <Icon name="file" size={18} />
-            Résumé (PDF)<span class="visually-hidden">, opens in new tab</span>
-          </a>
-        </li>
-      )
-    }
+    {profiles.map((link) => (
+      <li>
+        <a href={link.href} rel="me">
+          <Icon name={link.icon} size={18} />
+          {link.label}
+        </a>
+      </li>
+    ))}
+    {hasResume && (
+      <li>
+        <a href={site.resumePath} target="_blank" rel="noopener noreferrer">
+          <Icon name="file" size={18} />
+          Résumé (PDF)<span class="visually-hidden">, opens in new tab</span>
+        </a>
+      </li>
+    )}
   </ul>
 </div>
 

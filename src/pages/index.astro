@@ -37,11 +37,15 @@ const personJsonLd = {
 
   <Section id="projects" label="Selected work" title="Projects" class="projects-section">
     <div class="flagships">
-      {flagships.map((project) => <ProjectFlagship project={project} />)}
+      {flagships.map((project) => (
+        <ProjectFlagship project={project} />
+      ))}
     </div>
     <h3 class="label more-heading">More projects</h3>
     <div class="cards">
-      {featured.map((project) => <ProjectCard project={project} />)}
+      {featured.map((project) => (
+        <ProjectCard project={project} />
+      ))}
     </div>
   </Section>
 

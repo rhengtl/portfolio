@@ -14,7 +14,9 @@ import ThemeToggle from './ThemeToggle.astro';
 <header class="site-header" data-site-header>
   <div class="container site-header__inner">
     <a href="/" class="site-header__brand">
-      <span class="site-header__monogram" aria-hidden="true">{site.shortName}</span>
+      <span class="site-header__monogram" aria-hidden="true">
+        {site.shortName}
+      </span>
       <span class="site-header__name">{site.name}</span>
     </a>
 
@@ -34,32 +36,28 @@ import ThemeToggle from './ThemeToggle.astro';
 
     <nav class="site-header__nav" id="site-nav" aria-label="Main">
       <ul>
-        {
-          nav.map((item) => (
-            <li>
-              <a href={item.href} data-nav-link={item.href.split('#')[1]}>
-                {item.label}
-              </a>
-            </li>
-          ))
-        }
+        {nav.map((item) => (
+          <li>
+            <a href={item.href} data-nav-link={item.href.split('#')[1]}>
+              {item.label}
+            </a>
+          </li>
+        ))}
       </ul>
     </nav>
 
     <div class="site-header__actions">
-      {
-        hasResume && (
-          <a
-            class="site-header__resume"
-            href={site.resumePath}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Icon name="file" size={16} />
-            Résumé<span class="visually-hidden"> (PDF, opens in new tab)</span>
-          </a>
-        )
-      }
+      {hasResume && (
+        <a
+          class="site-header__resume"
+          href={site.resumePath}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Icon name="file" size={16} />
+          Résumé<span class="visually-hidden"> (PDF, opens in new tab)</span>
+        </a>
+      )}
       <ThemeToggle />
     </div>
   </div>

@@ -22,56 +22,70 @@ const credentialMeta = (c: (typeof credentials)[number]) =>
 
 <div class="about">
   <div class="about__intro">
-    {
-      headshot && (
-        <Picture
-          src={headshot}
-          alt={`Portrait of ${site.name}`}
-          formats={['avif', 'webp']}
-          width={320}
-          height={320}
-          fit="cover"
-          class="about__photo"
-        />
-      )
-    }
+    {headshot && (
+      <Picture
+        src={headshot}
+        alt={`Portrait of ${site.name}`}
+        formats={['avif', 'webp']}
+        width={320}
+        height={320}
+        fit="cover"
+        class="about__photo"
+      />
+    )}
     <div class="about__text prose">
-      {about.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+      {about.paragraphs.map((paragraph) => (
+        <p>{paragraph}</p>
+      ))}
     </div>
   </div>
 
   <div class="about__columns">
     <section aria-labelledby="education-heading">
-      <h3 id="education-heading" class="label">Education</h3>
+      <h3 id="education-heading" class="label">
+        Education
+      </h3>
       <p class="about__degree">
         {education.degree} <span class="about__muted">({education.specialization})</span>
       </p>
-      <p>{education.school}, {education.location}</p>
+      <p>
+        {education.school}, {education.location}
+      </p>
       <p class="about__muted">
         Graduated {education.graduated} · {education.honors}
       </p>
       <p class="about__thesis">
         <span class="label">Thesis</span>
-        <a href={about.thesis.href}>{about.thesis.title}<Icon name="external" size={14} /></a>
+        <a href={about.thesis.href}>
+          {about.thesis.title}
+          <Icon name="external" size={14} />
+        </a>
         <span class="about__muted">{about.thesis.note}</span>
       </p>
     </section>
 
     <section aria-labelledby="credentials-heading">
-      <h3 id="credentials-heading" class="label">Certifications</h3>
+      <h3 id="credentials-heading" class="label">
+        Certifications
+      </h3>
       <ul class="about__credentials">
-        {
-          credentials.map((c) => (
-            <li>
-              {c.href ? <a href={c.href}>{c.name}</a> : <span class="about__credential-name">{c.name}</span>}<span class="about__muted">{credentialMeta(c)}</span>
-            </li>
-          ))
-        }
+        {credentials.map((c) => (
+          <li>
+            {c.href ? (
+              <a href={c.href}>{c.name}</a>
+            ) : (
+              <span class="about__credential-name">{c.name}</span>
+            )}
+            <span class="about__muted">{credentialMeta(c)}</span>
+          </li>
+        ))}
       </ul>
 
       <h3 class="label about__activities-heading">Activities</h3>
       <ul class="about__credentials">
-        {activities.map((a) => <li>{a}</li>)}
+        {activities.map((a) => (
+          <li>{a}</li>
+        ))}
       </ul>
     </section>
   </div>

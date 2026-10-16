@@ -9,6 +9,8 @@ interface Step {
   tech?: string;
 }
 
+import { markTagalog } from '@/lib/lang';
+
 interface Props {
   steps: Step[];
   label: string;
@@ -20,18 +22,16 @@ const { steps, label, vertical = false } = Astro.props;
 ---
 
 <ol class:list={['flow', { 'flow--vertical': vertical }]} aria-label={label}>
-  {
-    steps.map((step, i) => (
-      <li class="flow__step">
-        <span class="flow__index" aria-hidden="true">
-          {String(i + 1).padStart(2, '0')}
-        </span>
-        <p class="flow__title">{step.title}</p>
-        <p class="flow__detail">{step.detail}</p>
-        {step.tech && <p class="flow__tech">{step.tech}</p>}
-      </li>
-    ))
-  }
+  {steps.map((step, i) => (
+    <li class="flow__step">
+      <span class="flow__index" aria-hidden="true">
+        {String(i + 1).padStart(2, '0')}
+      </span>
+      <p class="flow__title">{step.title}</p>
+      <p class="flow__detail" set:html={markTagalog(step.detail)} />
+      {step.tech && <p class="flow__tech">{step.tech}</p>}
+    </li>
+  ))}
 </ol>
 
 <style>

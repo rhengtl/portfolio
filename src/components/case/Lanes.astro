@@ -23,22 +23,20 @@ const { lanes, label } = Astro.props;
 ---
 
 <div class="lanes" role="group" aria-label={label}>
-  {
-    lanes.map((lane) => (
-      <section class="lane">
-        <h3 class="lane__title label">{lane.title}</h3>
-        {lane.note && <p class="lane__note">{lane.note}</p>}
-        <ul class="lane__items">
-          {lane.items.map((item) => (
-            <li>
-              <span class="lane__item-title">{item.title}</span>
-              <span class="lane__item-detail">{item.detail}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
-    ))
-  }
+  {lanes.map((lane) => (
+    <section class="lane">
+      <h3 class="lane__title label">{lane.title}</h3>
+      {lane.note && <p class="lane__note">{lane.note}</p>}
+      <ul class="lane__items">
+        {lane.items.map((item) => (
+          <li>
+            <span class="lane__item-title">{item.title}</span>
+            <span class="lane__item-detail">{item.detail}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
 </div>
 
 <style>

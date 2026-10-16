@@ -1,7 +1,9 @@
 ---
 /**
- * Short muted demo clip for a case-study Figure: native controls,
- * poster frame, nothing downloaded until the visitor presses play, never autoplays.
+ * Short muted demo clip for a case-study Figure: native controls, never autoplays, and nothing is
+ * downloaded until it's needed. Browsers fetch `poster` eagerly even with preload="none", which
+ * competes with the page's main image, so the poster is attached only as the clip nears the
+ * viewport. Without JavaScript the clip still plays; it just has no preview frame.
  */
 interface Props {
   /** Path under public/, e.g. /media/clip.mp4 (H.264, faststart, ≤ 3 MB). */
@@ -22,7 +24,7 @@ const { src, poster, width, height, label } = Astro.props;
   muted
   playsinline
   preload="none"
-  poster={poster}
+  data-poster={poster}
   width={width}
   height={height}
   aria-label={label}
@@ -30,6 +32,30 @@ const { src, poster, width, height, label } = Astro.props;
   <source src={src} type="video/mp4" />
   <a href={src}>Download the clip (MP4)</a>
 </video>
+
+<script>
+  const clips = document.querySelectorAll<HTMLVideoElement>('video[data-poster]');
+  const attach = (v: HTMLVideoElement) => {
+    v.poster = v.dataset.poster ?? '';
+    v.removeAttribute('data-poster');
+  };
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            attach(e.target as HTMLVideoElement);
+            io.unobserve(e.target);
+          }
+        }
+      },
+      { rootMargin: '600px 0px' },
+    );
+    clips.forEach((v) => io.observe(v));
+  } else {
+    clips.forEach(attach);
+  }
+</script>
 
 <style>
   .clip {

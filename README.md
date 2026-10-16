@@ -12,8 +12,8 @@ three largest, plus experience, skills and credentials.
 
 - **Static and fast.** Every page is pre-rendered HTML with no client framework; the site's own
   JavaScript is about 1 kB gzipped (theme toggle, mobile menu, active section, copy button).
-  Lighthouse on mobile scores 99–100 for performance and 100 for accessibility, best practices
-  and SEO.
+  Lighthouse (mobile) scores 100 for performance, accessibility, best practices and SEO on the
+  home page and every case study, with the largest content painted in under 1.8 s.
 - **Case studies as content.** Projects are MDX files in a typed content collection. Charts and
   diagrams (latency scale, before/after comparisons, pipeline flows) are plain HTML and CSS
   components, so their labels stay real text at any screen size.
@@ -27,15 +27,15 @@ three largest, plus experience, skills and credentials.
 
 ## Tech stack
 
-| Area | Choice |
-|---|---|
-| Framework | [Astro 7](https://astro.build), static output |
-| Language | TypeScript (strict) |
-| Content | MDX with Zod-validated content collections |
-| Styling | Scoped CSS with design tokens; IBM Plex Sans and Mono via the Astro Fonts API |
-| Images | `astro:assets` (AVIF and WebP, responsive sizes) |
-| Tooling | `astro check`, Prettier, Playwright (asset generation), axe-core (audits) |
-| Hosting | Vercel, with Vercel Web Analytics |
+| Area      | Choice                                                                          |
+| --------- | ------------------------------------------------------------------------------- |
+| Framework | [Astro 7](https://astro.build), static output                                   |
+| Language  | TypeScript (strict)                                                             |
+| Content   | MDX with Zod-validated content collections                                      |
+| Styling   | Scoped CSS with design tokens; IBM Plex Sans and Mono via the Astro Fonts API   |
+| Images    | `astro:assets` (AVIF and WebP, responsive sizes)                                |
+| Tooling   | `astro check`, Prettier, Lighthouse CI, Playwright and sharp (asset generation) |
+| Hosting   | Vercel, with Vercel Web Analytics                                               |
 
 ## Getting started
 
@@ -65,12 +65,12 @@ scripts/              asset generation (social images, résumé)
 
 ## Editing content
 
-| To change | Edit |
-|---|---|
-| Name, title, links, experience, skills, credentials | `src/data/site.ts` |
-| A project or case study | `src/content/projects/<slug>.mdx` |
-| Colours, spacing, type scale | `src/styles/tokens.css` |
-| Site origin (canonical URLs, sitemap) | `SITE` in `astro.config.mjs` and `public/robots.txt` |
+| To change                                           | Edit                                                 |
+| --------------------------------------------------- | ---------------------------------------------------- |
+| Name, title, links, experience, skills, credentials | `src/data/site.ts`                                   |
+| A project or case study                             | `src/content/projects/<slug>.mdx`                    |
+| Colours, spacing, type scale                        | `src/styles/tokens.css`                              |
+| Site origin (canonical URLs, sitemap)               | `SITE` in `astro.config.mjs` and `public/robots.txt` |
 
 To add a project, create `src/content/projects/<slug>.md` (or `.mdx`) with the frontmatter defined
 in `src/content.config.ts`. A file with a body becomes a case study at `/projects/<slug>`.
@@ -92,6 +92,19 @@ The script renders with Microsoft Edge through `playwright-core`.
 `scripts/resume-check.mjs` (one US Letter page, embedded fonts, correct text order and working
 links). The résumé's source content is kept out of this repository, so these two scripts won't run
 from a fresh clone. The Résumé buttons appear on the site only when the PDF exists.
+
+## Quality checks
+
+Every push and pull request runs `.github/workflows/ci.yml`: Prettier, `astro check` plus the
+build, and Lighthouse CI on the home page and the three case studies. The thresholds live in
+`lighthouserc.json` (accessibility, best practices and SEO at least 95; layout shift at most 0.05).
+To run the same checks locally:
+
+```sh
+npm run format:check
+npm run build
+npx @lhci/cli@0.14.0 autorun   # needs Chrome; set CHROME_PATH to use another Chromium browser
+```
 
 ## Deployment
 

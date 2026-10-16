@@ -44,6 +44,8 @@ const projects = defineCollection({
             video: z.url().optional(),
           })
           .default({}),
+        /** Shown under a card's links, e.g. that a free-tier demo sleeps when idle. */
+        liveNote: z.string().max(100).optional(),
         cover: image().optional(),
         coverAlt: z.string().optional(),
         /** Case-study TL;DR. Required when the entry has a body. */
@@ -68,10 +70,16 @@ const projects = defineCollection({
         }
         if (p.tier === 'flagship' && !p.draft) {
           if (!p.cover || !p.coverAlt) {
-            ctx.addIssue({ code: 'custom', message: 'a published flagship needs cover + coverAlt' });
+            ctx.addIssue({
+              code: 'custom',
+              message: 'a published flagship needs cover + coverAlt',
+            });
           }
           if (p.metrics.length === 0) {
-            ctx.addIssue({ code: 'custom', message: 'a published flagship needs at least one metric' });
+            ctx.addIssue({
+              code: 'custom',
+              message: 'a published flagship needs at least one metric',
+            });
           }
         }
       }),

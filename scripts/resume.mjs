@@ -25,16 +25,26 @@ const photoUri = content.header.photo
   : null;
 
 const esc = (s) =>
-  String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 // Escapes text, then highlights unconfirmed placeholders so drafts make them obvious.
-const text = (s) => esc(s).replace(/\[confirm:[^\]]*\]/g, (m) => `<mark class="confirm">${m}</mark>`);
+const text = (s) =>
+  esc(s).replace(/\[confirm:[^\]]*\]/g, (m) => `<mark class="confirm">${m}</mark>`);
 const link = (l) => `<a href="${esc(l.href)}">${esc(l.text)}</a>`;
 const sep = '<span class="sep">·</span>';
 const inVariant = (item, v) => !item.variants || item.variants.includes(v);
+// The visible "Updated" date is the generation month, so it can't go stale.
+const updated = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
 function html(variant, { phone, photo }) {
   const h = content.header;
-  const contact = [text(priv.location ?? h.location), link({ text: h.email, href: `mailto:${h.email}` })];
+  const contact = [
+    text(priv.location ?? h.location),
+    link({ text: h.email, href: `mailto:${h.email}` }),
+  ];
   if (phone) contact.push(esc(phone));
 
   const projects = content.projects
@@ -47,17 +57,21 @@ function html(variant, { phone, photo }) {
           <p class="entry-title">${link({ text: p.title, href: p.link.href })} <span class="purpose">— ${text(p.purpose)}</span><span class="scope">${sep}${text(p.scope)}</span></p>
           <p class="entry-date">${text(p.date)}</p>
         </div>
-        <ul>${p.bullets.filter((b) => inVariant(b, variant)).map((b) => `<li>${text(b.text)}</li>`).join('')}</ul>
+        <ul>${p.bullets
+          .filter((b) => inVariant(b, variant))
+          .map((b) => `<li>${text(b.text)}</li>`)
+          .join('')}</ul>
       </div>`,
     )
     .join('');
 
-  const also = content.alsoBuilt && inVariant(content.alsoBuilt, variant)
-    ? `<p class="plain">${content.alsoBuilt.links.reduce(
-        (acc, l) => acc.replace(esc(l.text), link(l)),
-        text(content.alsoBuilt.text),
-      )}</p>`
-    : '';
+  const also =
+    content.alsoBuilt && inVariant(content.alsoBuilt, variant)
+      ? `<p class="plain">${content.alsoBuilt.links.reduce(
+          (acc, l) => acc.replace(esc(l.text), link(l)),
+          text(content.alsoBuilt.text),
+        )}</p>`
+      : '';
 
   const experience = content.experience
     .map(
@@ -110,14 +124,17 @@ function html(variant, { phone, photo }) {
 <section><h2>Projects</h2>${projects}${also}</section>
 <section><h2>Experience</h2>${experience}</section>
 <section class="skills"><h2>Skills</h2>${skills}</section>
-<section><h2>Certifications</h2><p class="certs">${text(content.certifications.text)}</p></section>
+<section><h2>Certifications &amp; Training</h2><p class="certs">${text(content.certifications.text)}</p></section>
+<p class="updated">Updated ${updated}</p>
 </body></html>`;
 }
 
 const { $comment, ...rendered } = content;
 const unconfirmed = JSON.stringify(rendered).match(/\[confirm:[^\]]*\]/g) ?? [];
 if (publish && unconfirmed.length) {
-  console.error(`Refusing to publish: ${unconfirmed.length} unconfirmed item(s):\n  ${[...new Set(unconfirmed)].join('\n  ')}`);
+  console.error(
+    `Refusing to publish: ${unconfirmed.length} unconfirmed item(s):\n  ${[...new Set(unconfirmed)].join('\n  ')}`,
+  );
   process.exit(1);
 }
 
@@ -136,10 +153,17 @@ async function render(variant, file, opts) {
 for (const [variant, { file }] of Object.entries(content.variants)) {
   await render(variant, resolve(outDir, `${file}.pdf`), { phone: priv.phone, photo: true });
   // Photo-free copies for remote and international employers, where photos are not expected.
-  await render(variant, resolve(outDir, `${file}-NoPhoto.pdf`), { phone: priv.phone, photo: false });
+  await render(variant, resolve(outDir, `${file}-NoPhoto.pdf`), {
+    phone: priv.phone,
+    photo: false,
+  });
 }
 if (publish) {
-  await render('A', resolve(root, 'public/Rhenier-Gustilo-Resume.pdf'), { phone: undefined, photo: true });
+  await render('A', resolve(root, 'public/Rhenier-Gustilo-Resume.pdf'), {
+    phone: undefined,
+    photo: true,
+  });
 }
 await browser.close();
-if (unconfirmed.length) console.log(`Draft: ${new Set(unconfirmed).size} unconfirmed item(s) highlighted.`);
+if (unconfirmed.length)
+  console.log(`Draft: ${new Set(unconfirmed).size} unconfirmed item(s) highlighted.`);

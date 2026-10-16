@@ -22,24 +22,24 @@ const { number, caption, src, alt = '', wide = false, maxWidth } = Astro.props;
 
 <figure class:list={['figure', { 'figure--wide': wide }]}>
   <div class="figure__frame" style={maxWidth ? `max-width: ${maxWidth}` : undefined}>
-    {
-      src ? (
-        <Picture
-          src={src}
-          alt={alt}
-          formats={['avif', 'webp']}
-          layout="constrained"
-          width={Math.min(src.width, 960)}
-          height={Math.round((Math.min(src.width, 960) / src.width) * src.height)}
-          sizes="(min-width: 64rem) 960px, calc(100vw - 2rem)"
-          quality={72}
-        />
-      ) : (
-        <slot />
-      )
-    }
+    {src ? (
+      <Picture
+        src={src}
+        alt={alt}
+        formats={['avif', 'webp']}
+        layout="constrained"
+        width={Math.min(src.width, 960)}
+        height={Math.round((Math.min(src.width, 960) / src.width) * src.height)}
+        sizes="(min-width: 64rem) 960px, calc(100vw - 2rem)"
+        quality={72}
+      />
+    ) : (
+      <slot />
+    )}
   </div>
-  <figcaption><span class="figure__number">Fig. {number}</span> — {caption}</figcaption>
+  <figcaption>
+    <span class="figure__number">Fig. {number}</span> — {caption}
+  </figcaption>
 </figure>
 
 <style>

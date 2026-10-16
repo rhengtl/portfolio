@@ -1,8 +1,8 @@
 ---
 title: ConTeX
-tagline: Photograph handwriting or drop in a PDF and get LaTeX back, compiled to a PDF preview in your browser.
+tagline: Photograph handwriting or upload a PDF and get LaTeX back, compiled and previewed in your browser.
 seoTitle: Handwriting to LaTeX at the edge
-description: "How I rebuilt ConTeX on Cloudflare’s edge: a Worker that owns the Gemini prompt, LaTeX compiled in the browser, and an offline fallback matching Python."
+description: 'How I rebuilt ConTeX on Cloudflare’s edge: a Worker that owns the Gemini prompt, LaTeX compiled in the browser, and an offline fallback matching Python.'
 summary: >-
   A Cloudflare Worker owns the Gemini prompt; if the AI is unavailable, OCR and an ONNX formula
   recognizer run in the browser instead. LaTeX compiles client-side with pdfTeX in WebAssembly.
@@ -76,33 +76,71 @@ The constraints for ConTeX:
 
 ## How it works
 
-<Figure number={1} caption="Where each part runs. The heavy work — compiling and the offline fallback — happens in the visitor’s browser, so the server stays small and free." wide>
+<Figure
+  number={1}
+  caption="Where each part runs. The heavy work — compiling and the offline fallback — happens in the visitor’s browser, so the server stays small and free."
+  wide
+>
   <Lanes
     label="ConTeX architecture"
     lanes={[
       {
         title: 'Browser',
         items: [
-          { title: 'Input', detail: 'File picker, drag-and-drop, camera or a drawing canvas; PDFs are split into single pages.' },
-          { title: 'Validate and compile', detail: 'Unsafe TeX is refused, then pdfTeX (SwiftLaTeX, WebAssembly) compiles against a self-hosted TeX Live subset.' },
-          { title: 'Preview', detail: 'pdf.js renders the compiled PDF on a canvas; the .tex downloads unchanged.' },
-          { title: 'Offline fallback', detail: 'Tesseract OCR and an INT8 ONNX formula recognizer, running locally — nothing is sent anywhere.' },
+          {
+            title: 'Input',
+            detail:
+              'File picker, drag-and-drop, camera or a drawing canvas; PDFs are split into single pages.',
+          },
+          {
+            title: 'Validate and compile',
+            detail:
+              'Unsafe TeX is refused, then pdfTeX (SwiftLaTeX, WebAssembly) compiles against a self-hosted TeX Live subset.',
+          },
+          {
+            title: 'Preview',
+            detail: 'pdf.js renders the compiled PDF on a canvas; the .tex downloads unchanged.',
+          },
+          {
+            title: 'Offline fallback',
+            detail:
+              'Tesseract OCR and an INT8 ONNX formula recognizer, running locally — nothing is sent anywhere.',
+          },
         ],
       },
       {
         title: 'Cloudflare Worker',
         items: [
-          { title: 'Owns the prompt', detail: 'Takes only raw page bytes, uploads them to Gemini’s Files API and writes the whole model request itself.' },
-          { title: 'Model chain', detail: 'Tries a chain of models in order and keeps per-model outage records in KV.' },
-          { title: 'Sessions and history', detail: 'Signed session cookie, sign-in via Identity Toolkit, saved conversions scoped by user ID.' },
-          { title: 'Protection', detail: 'Per-caller rate limits in a Durable Object, and a strict Content-Security-Policy on every response.' },
+          {
+            title: 'Owns the prompt',
+            detail:
+              'Takes only raw page bytes, uploads them to Gemini’s Files API and writes the whole model request itself.',
+          },
+          {
+            title: 'Model chain',
+            detail: 'Tries a chain of models in order and keeps per-model outage records in KV.',
+          },
+          {
+            title: 'Sessions and history',
+            detail:
+              'Signed session cookie, sign-in via Identity Toolkit, saved conversions scoped by user ID.',
+          },
+          {
+            title: 'Protection',
+            detail:
+              'Per-caller rate limits in a Durable Object, and a strict Content-Security-Policy on every response.',
+          },
         ],
       },
       {
         title: 'Google services',
         items: [
           { title: 'Gemini', detail: 'Reads the page and returns LaTeX.' },
-          { title: 'Firebase', detail: 'Accounts and saved history. Firestore rules deny every direct client read and write.' },
+          {
+            title: 'Firebase',
+            detail:
+              'Accounts and saved history. Firestore rules deny every direct client read and write.',
+          },
         ],
       },
     ]}
@@ -112,8 +150,8 @@ The constraints for ConTeX:
 Two decisions explain most of the design. **The heavy work runs in the browser**, so there is no
 compile queue, no server timeout and no gigabyte-sized TeX install to host. And **static assets
 never invoke the Worker**: the TeX tree, the WebAssembly engine and the model weights are served
-directly by the platform, free and unmetered. A page load costs two Worker requests; an *N*-page
-conversion costs *N* + 1, against a free allowance of 100,000 a day.
+directly by the platform, free and unmetered. A page load costs two Worker requests; an _N_-page
+conversion costs _N_ + 1, against a free allowance of 100,000 a day.
 
 <Figure
   number={2}
@@ -176,7 +214,7 @@ different, browser-dependent filter, and a differently filtered image is a diffe
 ported Pillow’s resampler to JavaScript. Then the first benchmark run scored 69% and looked like a
 failed port. It wasn’t: the suite compared raw strings, while the benchmark’s scorer normalises
 spacing (`E = m c ^ { 2 }` and `E = mc^2` are the same answer). With the benchmark’s own scorer,
-the browser port came out slightly *ahead* of the Python reference (Results, below). Tesseract is
+the browser port came out slightly _ahead_ of the Python reference (Results, below). Tesseract is
 the same engine compiled to WebAssembly with the same language file, self-hosted so the offline
 path never contacts a third party.
 

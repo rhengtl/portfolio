@@ -1,0 +1,26 @@
+# Quality gates: formatting, type-check + build, then Lighthouse CI on the built pages
+# (thresholds in lighthouserc.json: accessibility, best practices and SEO ≥ 95, CLS ≤ 0.05).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run build
+      - name: Lighthouse CI
+        run: npx --yes @lhci/cli@0.14.0 autorun

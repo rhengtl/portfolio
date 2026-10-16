@@ -27,3 +27,6 @@ Thumbs.db
 resume/
 PORTFOLIO_SPEC.md
 resume-research-and-implementation-plan.md
+
+# Lighthouse CI reports
+.lighthouseci/

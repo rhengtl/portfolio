@@ -13,6 +13,10 @@ timeline:
   start: 2026-06-01
   end: 2026-09-30
 stack: [C#, .NET 10, WPF, Win32]
+metrics:
+  - label: Release
+    value: Single .exe
+    context: no .NET install
 links:
   repo: https://github.com/RhenGTL/clickmap
   release: https://github.com/RhenGTL/clickmap/releases/tag/v1.1.0

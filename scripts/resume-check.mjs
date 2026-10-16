@@ -27,10 +27,16 @@ async function validate(file, variant, { expectPhone, expectPhoto }) {
   check(/Page size:\s+612 x 792 pts/.test(info), 'US Letter (612 × 792 pt)');
 
   const fonts = run('pdffonts', [file]).split('\n').slice(2).filter(Boolean);
-  check(fonts.length > 0 && fonts.every((l) => /\s+yes\s+yes\s+yes\s+/.test(l)), `all ${fonts.length} fonts embedded, subset, with ToUnicode`);
+  check(
+    fonts.length > 0 && fonts.every((l) => /\s+yes\s+yes\s+yes\s+/.test(l)),
+    `all ${fonts.length} fonts embedded, subset, with ToUnicode`,
+  );
 
   const images = run('pdfimages', ['-list', file]).split('\n').slice(2).filter(Boolean).length;
-  check(expectPhoto ? images === 1 : images === 0, expectPhoto ? 'headshot embedded (1 image)' : 'no photo');
+  check(
+    expectPhoto ? images === 1 : images === 0,
+    expectPhoto ? 'headshot embedded (1 image)' : 'no photo',
+  );
 
   const text = run('pdftotext', ['-enc', 'UTF-8', file, '-']);
   const flat = text.replace(/\s+/g, ' ');
@@ -43,8 +49,16 @@ async function validate(file, variant, { expectPhone, expectPhoto }) {
     .sort((a, b) => a.order[variant] - b.order[variant])
     .map((p) => p.title);
   const sequence = [
-    content.header.name, content.header.email, 'rhengtl.tech',
-    'SUMMARY', 'EDUCATION', 'PROJECTS', ...projects, 'EXPERIENCE', 'SKILLS', 'CERTIFICATIONS',
+    content.header.name,
+    content.header.email,
+    'rhengtl.tech',
+    'SUMMARY',
+    'EDUCATION',
+    'PROJECTS',
+    ...projects,
+    'EXPERIENCE',
+    'SKILLS',
+    'CERTIFICATIONS',
   ];
   let at = -1;
   const missing = sequence.filter((s) => {
@@ -53,45 +67,73 @@ async function validate(file, variant, { expectPhone, expectPhoto }) {
     at = i;
     return false;
   });
-  check(missing.length === 0, `text extracts in reading order${missing.length ? ` (missing/out of order: ${missing.join(', ')})` : ''}`);
+  check(
+    missing.length === 0,
+    `text extracts in reading order${missing.length ? ` (missing/out of order: ${missing.join(', ')})` : ''}`,
+  );
   for (const metric of ['1,015', '456', '3.8 s', '4.2 s', '96.25%', '2,465']) {
     check(flat.includes(metric), `metric "${metric}" extracts intact`);
   }
 
   const hasPhone = PHONE.test(flat) || (priv.phone && flat.includes(priv.phone));
-  check(expectPhone ? Boolean(hasPhone) : !hasPhone, expectPhone ? 'phone number present (application copy)' : 'no phone number (public copy)');
+  check(
+    expectPhone ? Boolean(hasPhone) : !hasPhone,
+    expectPhone ? 'phone number present (application copy)' : 'no phone number (public copy)',
+  );
 
   // Links: every annotation the PDF carries must be one we put there.
   const xml = run('pdftohtml', ['-xml', '-stdout', '-i', '-q', file]);
-  const links = [...new Set([...xml.matchAll(/<a href="([^"]+)"/g)].map((m) => m[1].replace(/&amp;/g, '&')))];
+  const links = [
+    ...new Set([...xml.matchAll(/<a href="([^"]+)"/g)].map((m) => m[1].replace(/&amp;/g, '&'))),
+  ];
   const expected = new Set([
     `mailto:${content.header.email}`,
     ...content.header.links.map((l) => l.href),
     ...content.projects.filter((p) => p.order[variant]).map((p) => p.link.href),
-    ...(content.alsoBuilt && (!content.alsoBuilt.variants || content.alsoBuilt.variants.includes(variant))
-      ? content.alsoBuilt.links.map((l) => l.href) : []),
+    ...(content.alsoBuilt &&
+    (!content.alsoBuilt.variants || content.alsoBuilt.variants.includes(variant))
+      ? content.alsoBuilt.links.map((l) => l.href)
+      : []),
   ]);
   const unexpected = links.filter((l) => !expected.has(l));
   const absent = [...expected].filter((l) => !links.includes(l));
-  check(!unexpected.length && !absent.length, `links match (${links.length})${unexpected.length ? ` unexpected: ${unexpected}` : ''}${absent.length ? ` missing: ${absent}` : ''}`);
+  check(
+    !unexpected.length && !absent.length,
+    `links match (${links.length})${unexpected.length ? ` unexpected: ${unexpected}` : ''}${absent.length ? ` missing: ${absent}` : ''}`,
+  );
 
   if (process.argv.includes('--links')) {
     for (const href of links.filter((l) => l.startsWith('http'))) {
-      const res = await fetch(href, { redirect: 'follow', headers: { 'user-agent': 'Mozilla/5.0 resume-link-check' } }).catch(() => null);
+      const res = await fetch(href, {
+        redirect: 'follow',
+        headers: { 'user-agent': 'Mozilla/5.0 resume-link-check' },
+      }).catch(() => null);
       const status = res?.status ?? 0;
       // LinkedIn answers automated requests with 999; the URL is the owner's own profile.
-      check(status === 200 || (status === 999 && href.includes('linkedin.com')), `${status} ${href}`);
+      check(
+        status === 200 || (status === 999 && href.includes('linkedin.com')),
+        `${status} ${href}`,
+      );
     }
   }
 }
 
 for (const [variant, { file }] of Object.entries(content.variants)) {
-  for (const [suffix, expectPhoto] of [['', true], ['-NoPhoto', false]]) {
-    await validate(resolve(root, 'resume/out', `${file}${suffix}.pdf`), variant, { expectPhone: Boolean(priv.phone), expectPhoto });
+  for (const [suffix, expectPhoto] of [
+    ['', true],
+    ['-NoPhoto', false],
+  ]) {
+    await validate(resolve(root, 'resume/out', `${file}${suffix}.pdf`), variant, {
+      expectPhone: Boolean(priv.phone),
+      expectPhoto,
+    });
   }
 }
 if (process.argv.includes('--public')) {
-  await validate(resolve(root, 'public/Rhenier-Gustilo-Resume.pdf'), 'A', { expectPhone: false, expectPhoto: true });
+  await validate(resolve(root, 'public/Rhenier-Gustilo-Resume.pdf'), 'A', {
+    expectPhone: false,
+    expectPhoto: true,
+  });
 }
 console.log(failures ? `\n${failures} check(s) failed.` : '\nAll checks passed.');
 process.exit(failures ? 1 : 0);

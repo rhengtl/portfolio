@@ -4,6 +4,7 @@
  * the MDX body (problem → architecture → contribution → challenges → results → limitations),
  * then "Next project".
  */
+import { markTagalog } from '@/lib/lang';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { Picture } from 'astro:assets';
@@ -47,7 +48,7 @@ const STATUS: Record<string, string> = {
       </a>
       <p class="label">{projectLabel(project)}</p>
       <h1>{data.title}</h1>
-      <p class="case__tagline">{data.tagline}</p>
+      <p class="case__tagline" set:html={markTagalog(data.tagline)} />
 
       <dl class="case__meta">
         <div>
@@ -96,15 +97,15 @@ const STATUS: Record<string, string> = {
         <dl>
           <div>
             <dt>Problem</dt>
-            <dd>{tldr.problem}</dd>
+            <dd set:html={markTagalog(tldr.problem)} />
           </div>
           <div>
             <dt>What I built</dt>
-            <dd>{tldr.built}</dd>
+            <dd set:html={markTagalog(tldr.built)} />
           </div>
           <div>
             <dt>Result</dt>
-            <dd>{tldr.result}</dd>
+            <dd set:html={markTagalog(tldr.result)} />
           </div>
         </dl>
       </section>
@@ -121,7 +122,7 @@ const STATUS: Record<string, string> = {
             sizes="(min-width: 56rem) 832px, calc(100vw - 2rem)"
             style={`view-transition-name: cover-${project.id}`}
             fit="cover"
-            quality={72}
+            quality={60}
             loading="eager"
             fetchpriority="high"
           />
@@ -137,7 +138,7 @@ const STATUS: Record<string, string> = {
           <p class="label">Next project</p>
           <a href={`/projects/${next.id}`}>
             <span class="case__next-title">{next.data.title}</span>
-            <span class="case__next-tagline">{next.data.tagline}</span>
+            <span class="case__next-tagline" set:html={markTagalog(next.data.tagline)} />
             <Icon name="arrow-right" size={20} />
           </a>
         </nav>

@@ -6,25 +6,23 @@ import { experience, experienceIntro } from '@/data/site';
 <p class="experience__intro prose">{experienceIntro}</p>
 
 <ol class="experience">
-  {
-    experience.map((entry) => (
-      <li class="experience__item">
-        <p class="experience__period label tabular">{entry.period}</p>
-        <div class="experience__body">
-          <h3 class="experience__role">{entry.role}</h3>
-          <p class="experience__org">
-            {entry.org}
-            {entry.orgNote && <span class="experience__org-note"> ({entry.orgNote})</span>}
-          </p>
-          <ul class="experience__bullets">
-            {entry.bullets.map((bullet) => (
-              <li>{bullet}</li>
-            ))}
-          </ul>
-        </div>
-      </li>
-    ))
-  }
+  {experience.map((entry) => (
+    <li class="experience__item">
+      <p class="experience__period label tabular">{entry.period}</p>
+      <div class="experience__body">
+        <h3 class="experience__role">{entry.role}</h3>
+        <p class="experience__org">
+          {entry.org}
+          {entry.orgNote && <span class="experience__org-note"> ({entry.orgNote})</span>}
+        </p>
+        <ul class="experience__bullets">
+          {entry.bullets.map((bullet) => (
+            <li>{bullet}</li>
+          ))}
+        </ul>
+      </div>
+    </li>
+  ))}
 </ol>
 
 <style>

@@ -30,7 +30,9 @@ const { education } = site;
         <dt class="label">Core stack</dt>
         <dd>
           <ul class="hero__stack">
-            {site.coreStack.map((item) => <li>{item}</li>)}
+            {site.coreStack.map((item) => (
+              <li>{item}</li>
+            ))}
           </ul>
         </dd>
       </div>
@@ -40,26 +42,22 @@ const { education } = site;
       <LinkButton href="/#projects" variant="primary">
         View projects <Icon name="arrow-right" size={16} />
       </LinkButton>
-      {
-        hasResume && (
-          <LinkButton href={site.resumePath} target="_blank" rel="noopener noreferrer">
-            <Icon name="file" size={16} />
-            Résumé (PDF)<span class="visually-hidden">, opens in new tab</span>
-          </LinkButton>
-        )
-      }
+      {hasResume && (
+        <LinkButton href={site.resumePath} target="_blank" rel="noopener noreferrer">
+          <Icon name="file" size={16} />
+          Résumé (PDF)<span class="visually-hidden">, opens in new tab</span>
+        </LinkButton>
+      )}
     </div>
 
     <ul class="hero__socials" aria-label="Profiles and contact">
-      {
-        socials.map((link) => (
-          <li>
-            <a href={link.href} rel={link.icon === 'mail' ? undefined : 'me'}>
-              <Icon name={link.icon} label={link.label} />
-            </a>
-          </li>
-        ))
-      }
+      {socials.map((link) => (
+        <li>
+          <a href={link.href} rel={link.icon === 'mail' ? undefined : 'me'}>
+            <Icon name={link.icon} label={link.label} />
+          </a>
+        </li>
+      ))}
     </ul>
   </div>
 </section>

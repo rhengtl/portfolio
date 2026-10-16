@@ -16,28 +16,24 @@ const updated = new Date(`${site.lastUpdated}-01T00:00:00Z`).toLocaleDateString(
     </p>
 
     <ul class="site-footer__links" aria-label="Elsewhere">
-      {
-        socials.map((link) => (
-          <li>
-            <a href={link.href} rel={link.icon === 'mail' ? undefined : 'me'}>
-              <Icon name={link.icon} size={18} />
-              <span>{link.label}</span>
-            </a>
-          </li>
-        ))
-      }
+      {socials.map((link) => (
+        <li>
+          <a href={link.href} rel={link.icon === 'mail' ? undefined : 'me'}>
+            <Icon name={link.icon} size={18} />
+            <span>{link.label}</span>
+          </a>
+        </li>
+      ))}
     </ul>
 
     <p class="site-footer__meta label">
       <span>Last updated {updated}</span>
-      {
-        site.sourceRepo && (
-          <>
-            <span aria-hidden="true">·</span>
-            <a href={site.sourceRepo}>Built with Astro, view source</a>
-          </>
-        )
-      }
+      {site.sourceRepo && (
+        <>
+          <span aria-hidden="true">·</span>
+          <a href={site.sourceRepo}>Built with Astro, view source</a>
+        </>
+      )}
     </p>
   </div>
 </footer>
