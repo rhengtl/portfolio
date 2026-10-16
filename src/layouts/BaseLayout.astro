@@ -27,14 +27,30 @@ const analytics = process.env.VERCEL === '1';
     <meta name="theme-color" content="#fafaf7" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0f1113" media="(prefers-color-scheme: dark)" />
 
-    <!-- Applies a saved theme before first paint (no flash), and marks JS as available. -->
+    <!-- Applies a saved theme before first paint (no flash), and marks JS as available.
+         A manual choice is stored with the OS theme it was made under, and holds only while the
+         OS theme is unchanged; once the system switches, the site follows the system again. -->
     <script is:inline>
       (() => {
         const root = document.documentElement;
         root.classList.add('js');
         try {
-          const theme = localStorage.getItem('theme');
-          if (theme === 'light' || theme === 'dark') root.dataset.theme = theme;
+          const system = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          let saved = null;
+          try {
+            saved = JSON.parse(localStorage.getItem('theme') || 'null');
+          } catch {
+            /* the old format ("dark"/"light") carries no system theme: discard it */
+          }
+          if (
+            saved &&
+            saved.system === system &&
+            (saved.theme === 'light' || saved.theme === 'dark')
+          ) {
+            root.dataset.theme = saved.theme;
+          } else {
+            localStorage.removeItem('theme');
+          }
         } catch {
           /* storage unavailable: follow the OS preference */
         }

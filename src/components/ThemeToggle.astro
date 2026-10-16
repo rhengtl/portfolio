@@ -17,6 +17,22 @@ import Icon from './Icon.astro';
   const media = window.matchMedia('(prefers-color-scheme: dark)');
 
   const isDark = () => root.dataset.theme === 'dark' || (!root.dataset.theme && media.matches);
+  const systemTheme = () => (media.matches ? 'dark' : 'light');
+
+  // Storage can be unavailable (private mode, blocked site data); the theme still applies.
+  const save = (value: { theme: string; system: string } | null) => {
+    try {
+      if (value) localStorage.setItem('theme', JSON.stringify(value));
+      else localStorage.removeItem('theme');
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const followSystem = () => {
+    delete root.dataset.theme;
+    save(null);
+  };
 
   const sync = (button: HTMLButtonElement) => {
     button.setAttribute('aria-pressed', String(isDark()));
@@ -28,15 +44,21 @@ import Icon from './Icon.astro';
     sync(button);
     button.addEventListener('click', () => {
       const next = isDark() ? 'light' : 'dark';
-      root.dataset.theme = next;
-      try {
-        localStorage.setItem('theme', next);
-      } catch {
-        // Storage can be unavailable (private mode, blocked site data); the choice still applies.
+      if (next === systemTheme()) {
+        // Choosing what the system already shows is not an override: keep following it.
+        followSystem();
+      } else {
+        // Remember the choice together with the system theme it was made under.
+        root.dataset.theme = next;
+        save({ theme: next, system: systemTheme() });
       }
       sync(button);
     });
-    media.addEventListener('change', () => sync(button));
+    // The system theme changed while the page is open: drop any manual choice and follow it.
+    media.addEventListener('change', () => {
+      followSystem();
+      sync(button);
+    });
   }
 </script>
 
