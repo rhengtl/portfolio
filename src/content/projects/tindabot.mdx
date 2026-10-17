@@ -23,7 +23,7 @@ metrics:
     context: including 25 against a real Supabase project
   - label: Faster recompute
     value: 8×
-    context: 383 → 46 ms on two years of data
+    context: 383 → 46 ms on two years of data (desktop)
 links:
   repo: https://github.com/RhenGTL/tindabot
   live: https://tindabot.rhengtl.tech
@@ -44,8 +44,8 @@ tldr:
     for every number. Cloud backup and an AI helper are optional.
   result: >-
     Live at tindabot.rhengtl.tech, built and validated solo: 456 automated tests, with the business rules checked
-    against an independent Python model, and an 8× faster recompute on two years of data after profiling on a
-    real budget phone.
+    against an independent Python model. On two years of data, the full recompute runs up to 8× faster in
+    desktop benchmarks, and on a budget phone (realme C55) start-up fell from 3.3 s to 2.0 s.
 ---
 
 import Figure from '../../components/case/Figure.astro';
@@ -152,8 +152,10 @@ save froze the screen for up to 1.7 seconds.
 
 The rule wasn’t the problem; the way it read the log was. It re-scanned the whole log once per
 product, and once per customer per week for the weekly summaries. Grouping the log by product and by
-customer once per recompute made it 2.6× to 8.3× faster (Fig. 2), with identical output — a randomized test
-holds the grouped path against the original one.
+customer once per recompute made it 2.6× to 8.3× faster in desktop benchmarks (Fig. 2), with identical
+output — a randomized test holds the grouped path against the original one. On the phone, at two years of
+data, opening the app fell from 3.3 to 2.0 seconds and the longest freeze from 1.7 to 0.43 seconds (table
+below).
 
 **Trade-off, decided deliberately:** opening the app still takes about 2 seconds at two years of
 data, mostly reading the event log from storage. I chose not to add a cached snapshot or windowed

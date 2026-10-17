@@ -54,7 +54,7 @@ const cards = [
     label: 'Live · Solo · 2026',
     title: 'TindaBot',
     lead: 'Tells sari-sari store owners what to buy, how many, and how much money to bring.',
-    metric: '456 tests · 8× faster recompute',
+    metric: '456 tests · 8× faster recompute (desktop)',
     image: 'src/assets/projects/tindabot/cover.png',
     crop: { left: 418, top: 54, width: 1084, height: 678 },
   },

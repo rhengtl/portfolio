@@ -218,6 +218,12 @@ export const skillGroups: SkillGroup[] = [
     usedIn: ['contex', 'tindabot', 'tomatosense'],
   },
   {
+    title: 'AI-assisted development',
+    items: ['Claude Code (Anthropic)', 'Reviewing and testing AI-generated code'],
+    usedIn: ['earprompt', 'contex', 'tindabot', 'tomatosense', 'textsnip', 'clickmap'],
+    note: 'AI output is a draft; tests and device checks decide what ships. Testing ConTeX on mobile data, I found PDF previews timing out on slow links; the root-cause fix shipped with a new compile test suite.',
+  },
+  {
     title: 'Embedded & hardware',
     items: ['Raspberry Pi 5 (GPIO, I²C sensors, audio I/O)', 'Arduino / ESP', 'Verilog HDL'],
     usedIn: ['earprompt'],

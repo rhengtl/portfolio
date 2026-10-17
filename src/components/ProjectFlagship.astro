@@ -92,6 +92,7 @@ const links = evidenceLinks(project);
       </li>
     ))}
   </ul>
+  {data.liveNote && <p class="flagship__note">{data.liveNote}</p>}
 </article>
 
 <style>
@@ -168,6 +169,11 @@ const links = evidenceLinks(project);
     margin-right: var(--space-2);
   }
 
+  .flagship__note {
+    color: var(--muted);
+    font-size: var(--text-small);
+  }
+
   .flagship__links {
     display: flex;
     flex-wrap: wrap;
@@ -201,6 +207,7 @@ const links = evidenceLinks(project);
         'role media'
         'tags media'
         'links media'
+        'note media'
         '. media';
     }
 
@@ -231,6 +238,9 @@ const links = evidenceLinks(project);
     }
     .flagship__links {
       grid-area: links;
+    }
+    .flagship__note {
+      grid-area: note;
     }
   }
 </style>

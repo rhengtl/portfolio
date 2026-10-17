@@ -87,6 +87,7 @@ const STATUS: Record<string, string> = {
           ))}
         </ul>
       )}
+      {data.liveNote && <p class="case__note">{data.liveNote}</p>}
     </header>
 
     <div class="container">
@@ -209,6 +210,11 @@ const STATUS: Record<string, string> = {
     .case__meta-stack {
       grid-column: 1 / -1;
     }
+  }
+
+  .case__note {
+    color: var(--muted);
+    font-size: var(--text-small);
   }
 
   .case__links {
