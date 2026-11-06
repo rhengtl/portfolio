@@ -7,3 +7,6 @@ resume/
 resume-research-and-implementation-plan.md
 # Whitespace-sensitive inline lists (CSS-generated separators); formatting would add visible spaces.
 src/components/SkillsGrid.astro
+.transformation-backups/
+.transformation-qa/
+TRANSFORMATION-HANDOVER.md

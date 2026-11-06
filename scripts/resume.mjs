@@ -5,6 +5,8 @@
 //   node scripts/resume.mjs --publish  → also writes the public web copy of variant A, without a
 //                                        phone, to public/Rhenier-Gustilo-Resume.pdf
 // Publishing refuses while any text still contains "[confirm: …]".
+//   node scripts/resume.mjs --it       → separate IT profile, with and without the photo.
+// The IT profile never replaces the public SWE résumé or regenerates the existing profiles.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { chromium } from 'playwright-core';
@@ -12,10 +14,14 @@ import sharp from 'sharp';
 import { plexFontFaces } from './lib/fonts.mjs';
 
 const root = resolve(import.meta.dirname, '..');
-const content = JSON.parse(readFileSync(resolve(root, 'resume/content.json'), 'utf8'));
+const it = process.argv.includes('--it');
+const publish = process.argv.includes('--publish');
+if (it && publish) throw new Error('The IT profile is local only; omit --publish.');
+const content = JSON.parse(
+  readFileSync(resolve(root, it ? 'resume/content-it.json' : 'resume/content.json'), 'utf8'),
+);
 const privatePath = resolve(root, 'resume/private.local.json');
 const priv = existsSync(privatePath) ? JSON.parse(readFileSync(privatePath, 'utf8')) : {};
-const publish = process.argv.includes('--publish');
 const outDir = resolve(root, 'resume/out');
 mkdirSync(outDir, { recursive: true });
 
@@ -37,7 +43,11 @@ const link = (l) => `<a href="${esc(l.href)}">${esc(l.text)}</a>`;
 const sep = '<span class="sep">·</span>';
 const inVariant = (item, v) => !item.variants || item.variants.includes(v);
 // The visible "Updated" date is the generation month, so it can't go stale.
-const updated = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+const updated = new Date().toLocaleDateString('en-US', {
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'Asia/Manila',
+});
 
 function html(variant, { phone, photo }) {
   const h = content.header;
@@ -104,6 +114,38 @@ function html(variant, { phone, photo }) {
     .map((g) => `<p><span class="label">${esc(g.label)}:</span> ${text(g.items)}</p>`)
     .join('');
 
+  const sections = {
+    summary: `<p class="summary">${text(content.summary[variant])}</p>`,
+    education,
+    projects: projects + also,
+    experience,
+    skills,
+    certifications: `<p class="certs">${text(content.certifications.text)}</p>`,
+  };
+  const headings = {
+    summary: 'Summary',
+    education: 'Education',
+    projects: 'Projects',
+    experience: 'Experience',
+    skills: 'Skills',
+    certifications: 'Certifications & Training',
+    ...content.headings,
+  };
+  const order = content.sectionOrder ?? [
+    'summary',
+    'education',
+    'projects',
+    'experience',
+    'skills',
+    'certifications',
+  ];
+  const body = order
+    .map((key) => {
+      if (!(key in sections)) throw new Error(`Unknown resume section: ${key}`);
+      return `<section class="${key}"><h2>${esc(headings[key])}</h2>${sections[key]}</section>`;
+    })
+    .join('\n');
+
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <title>${esc(h.name)} — Résumé</title>
@@ -119,12 +161,7 @@ function html(variant, { phone, photo }) {
   </div>
   ${photo && photoUri ? `<img class="photo" src="${photoUri}" alt="Photo of ${esc(h.name)}">` : ''}
 </header>
-<section><h2>Summary</h2><p class="summary">${text(content.summary[variant])}</p></section>
-<section><h2>Education</h2>${education}</section>
-<section><h2>Projects</h2>${projects}${also}</section>
-<section><h2>Experience</h2>${experience}</section>
-<section class="skills"><h2>Skills</h2>${skills}</section>
-<section><h2>Certifications &amp; Training</h2><p class="certs">${text(content.certifications.text)}</p></section>
+${body}
 <p class="updated">Updated ${updated}</p>
 </body></html>`;
 }

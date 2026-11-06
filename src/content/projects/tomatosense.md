@@ -9,6 +9,7 @@ order: 4
 status: live
 scope: Solo
 role: Sole developer
+limitation: The 80-image split also informed kernel selection. This is development-set evidence, not an untouched final test or field reliability estimate.
 timeline:
   start: 2026-05-01
   end: 2026-09-30
@@ -16,7 +17,7 @@ stack: [Python, scikit-learn, OpenCV, FastAPI]
 metrics:
   - label: Accuracy
     value: 96.25%
-    context: 80-image held-out test
+    context: 80-image evaluation split; also used for kernel selection
 links:
   repo: https://github.com/RhenGTL/tomatosense
   live: https://tomato-sense.rhengtl.tech

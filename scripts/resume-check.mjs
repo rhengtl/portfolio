@@ -3,12 +3,19 @@
 //   node scripts/resume-check.mjs            → application copies in resume/out/
 //   node scripts/resume-check.mjs --public   → also the public web copy (must have no phone)
 //   node scripts/resume-check.mjs --links    → also fetch every hyperlink
+//   node scripts/resume-check.mjs --it       → validate only the separate IT profile
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const content = JSON.parse(readFileSync(resolve(root, 'resume/content.json'), 'utf8'));
+const it = process.argv.includes('--it');
+if (it && process.argv.includes('--public')) {
+  throw new Error('The IT profile has no public web copy; omit --public.');
+}
+const content = JSON.parse(
+  readFileSync(resolve(root, it ? 'resume/content-it.json' : 'resume/content.json'), 'utf8'),
+);
 const privatePath = resolve(root, 'resume/private.local.json');
 const priv = existsSync(privatePath) ? JSON.parse(readFileSync(privatePath, 'utf8')) : {};
 const run = (cmd, args) => execFileSync(cmd, args, { encoding: 'utf8' });
@@ -48,17 +55,31 @@ async function validate(file, variant, { expectPhone, expectPhoto }) {
     .filter((p) => p.order[variant])
     .sort((a, b) => a.order[variant] - b.order[variant])
     .map((p) => p.title);
+  const headings = {
+    summary: 'Summary',
+    education: 'Education',
+    projects: 'Projects',
+    experience: 'Experience',
+    skills: 'Skills',
+    certifications: 'Certifications & Training',
+    ...content.headings,
+  };
+  const order = content.sectionOrder ?? [
+    'summary',
+    'education',
+    'projects',
+    'experience',
+    'skills',
+    'certifications',
+  ];
   const sequence = [
     content.header.name,
     content.header.email,
     'rhengtl.tech',
-    'SUMMARY',
-    'EDUCATION',
-    'PROJECTS',
-    ...projects,
-    'EXPERIENCE',
-    'SKILLS',
-    'CERTIFICATIONS',
+    ...order.flatMap((key) => [
+      headings[key].toUpperCase(),
+      ...(key === 'projects' ? projects : []),
+    ]),
   ];
   let at = -1;
   const missing = sequence.filter((s) => {
@@ -71,8 +92,21 @@ async function validate(file, variant, { expectPhone, expectPhoto }) {
     missing.length === 0,
     `text extracts in reading order${missing.length ? ` (missing/out of order: ${missing.join(', ')})` : ''}`,
   );
-  for (const metric of ['1,015', '456', '3.8 s', '4.2 s', '96.25%', '2,465']) {
+  for (const metric of content.validation?.metrics ?? [
+    '1,015',
+    '456',
+    '3.8 s',
+    '4.2 s',
+    '96.25%',
+    '2,465',
+  ]) {
     check(flat.includes(metric), `metric "${metric}" extracts intact`);
+  }
+  for (const phrase of content.validation?.requiredText ?? []) {
+    check(
+      flat.toLowerCase().includes(phrase.toLowerCase()),
+      `required content "${phrase}" extracts intact`,
+    );
   }
 
   const hasPhone = PHONE.test(flat) || (priv.phone && flat.includes(priv.phone));

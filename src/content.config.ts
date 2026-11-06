@@ -21,6 +21,7 @@ const projects = defineCollection({
         /** e.g. "Solo", "Team of 4", "Thesis · Team of 4" */
         scope: z.string(),
         role: z.string(),
+        limitation: z.string().max(260).optional(),
         timeline: z.object({
           start: z.coerce.date(),
           end: z.coerce.date().optional(),

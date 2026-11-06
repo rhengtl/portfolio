@@ -1,6 +1,6 @@
 ---
 title: EarPrompt
-tagline: A wearable that listens to a conversation and whispers one short tip on how to respond.
+tagline: A speech-to-LLM coaching prototype with streaming audio and a companion mobile app.
 seoTitle: Real-time AI conversation coach
 description: 'How I built EarPrompt’s speech pipeline: speaker verification, Taglish LLM tips and streaming text-to-speech on a Raspberry Pi 5, at 3.8 s average latency.'
 summary: >-
@@ -8,10 +8,11 @@ summary: >-
   speaker, generates a Taglish coaching tip with an LLM and streams it to Bluetooth earbuds, with a
   Flutter app for users and speech-language pathologists.
 tier: flagship
-order: 1
+order: 3
 status: thesis
 scope: Team of 4
-role: Lead developer — audio/AI pipeline, backend, device control and most of the mobile app
+role: Lead developer — speech/API integration, Flask device API and most of the Flutter app
+limitation: Undergraduate thesis prototype using pretrained speech models and cloud APIs; small technical/acceptability evaluation, without clinical validation.
 period: Three semesters, 2025–⁠26
 timeline:
   start: 2025-10-01
@@ -20,10 +21,10 @@ stack: [Python, PyTorch, LLM APIs, Raspberry Pi, Flutter]
 metrics:
   - label: End-to-end latency
     value: 3.8 s avg
-    context: 4.2 s P95 over 3 test sessions
+    context: 3 test sessions; mean of session P95s 4.2 s
   - label: LLM cost
-    value: $0.02–0.07
-    context: per 30-minute session
+    value: Thesis estimate
+    context: LLM-only cost; excludes speech APIs
 links:
   repo: https://github.com/rhengtl/earprompt
   paper: https://drive.google.com/file/d/1P69KKB13oHfeHU089pQ5AMQEtUyjJy2s/view?usp=sharing
@@ -43,14 +44,13 @@ tldr:
     a Bluetooth earbud — plus a Flutter app for users and their therapists.
   result: >-
     A working prototype evaluated in the team’s thesis: 3.8 s average end-to-end latency (4.2 s
-    P95), about US$0.02–0.07 of LLM cost per 30-minute session, and “High” acceptability (2.81 / 4)
+    mean of session P95s), and “High” acceptability (2.81 / 4)
     from one patient and three speech-language pathologists.
 ---
 
 import Figure from '../../components/case/Figure.astro';
 import FlowSteps from '../../components/case/FlowSteps.astro';
 import MetricTable from '../../components/case/MetricTable.astro';
-import LatencyScale from '../../components/case/LatencyScale.astro';
 import BarList from '../../components/case/BarList.astro';
 import VideoClip from '../../components/case/VideoClip.astro';
 import deviceInside from '../../assets/projects/earprompt/device-inside.jpg';
@@ -112,7 +112,7 @@ constraints:
         title: 'Coach',
         detail:
           'An LLM writes one Taglish tip of 12 words or fewer, in the chosen tone, using a compact memory of recent turns.',
-        tech: 'OpenAI GPT-4.1 mini',
+        tech: 'OpenAI API (model configurable)',
       },
       {
         title: 'Speak',
@@ -178,14 +178,13 @@ session can be traced to transcription, the LLM or speech synthesis instead of g
 ## My contribution
 
 - **The audio and AI pipeline** — voice-activity detection, speaker verification, transcription,
-  the LLM prompt and the streaming text-to-speech path. I wrote 2,465 of the 2,663 lines in the
-  pipeline module (`backend/assistant.py`).
+  the LLM prompt and streaming text-to-speech path, integrating pretrained Silero and SpeechBrain models with cloud APIs.
 - **The device API and hardware control** — the Flask endpoints the app calls, the button and LED
   handling, and battery monitoring over I²C.
 - **Voice analysis** — the acoustic measurements and the baseline comparison that raises alerts
   such as "pitch too high" or "unstable pitch".
 - **Most of the Flutter app** — the therapist’s patient list and session history, voice
-  registration, device Wi-Fi setup and the dashboard — about 90% of the app’s Dart code.
+  registration, device Wi-Fi setup and the dashboard. The team shared the research, evaluation and manuscript.
 
 ## Key technical challenges
 
@@ -229,7 +228,9 @@ of context cost under seven US cents per 30-minute session.
 
 ## Results
 
-All figures are from the thesis evaluation. Latency is the _Prompt Delivery Window_: the time from
+The thesis evaluated GPT-4.1 mini; the current repository defaults to configurable `gpt-4o-mini`. These are historical prototype measurements, not a benchmark of the current default. Cost estimates below cover LLM calls only and use the thesis pricing assumptions.
+
+All figures are from the thesis evaluation. The 4.2 s figure is the mean of three session-level P95 values, not a pooled P95. Latency is the _Prompt Delivery Window_: the time from
 the end of the other person’s speech to the tip being delivered.
 
 <MetricTable
@@ -246,26 +247,6 @@ the end of the other person’s speech to the tip being delivered.
 
 <Figure
   number={6}
-  caption="EarPrompt’s average and P95 latency against reference tiers for voice-AI systems, as cited in the thesis. It sits in the 3–5 s tier: slower than the industry median, well clear of the breakdown range."
->
-  <LatencyScale
-    label="Latency compared with voice-AI tiers"
-    max={15}
-    bands={[
-      { from: 0, to: 1, label: 'Theoretical ideal' },
-      { from: 1.4, to: 1.7, label: 'Industry median' },
-      { from: 3, to: 5, label: 'Common experience (P90–P95)' },
-      { from: 8, to: 15, label: 'Worst case: conversation breaks down' },
-    ]}
-    markers={[
-      { value: 3.817, label: 'Average' },
-      { value: 4.195, label: 'P95' },
-    ]}
-  />
-</Figure>
-
-<Figure
-  number={7}
   caption="Average tokens per LLM request as more conversation turns are kept in context (thesis Table 16). Growth is linear, not runaway."
 >
   <BarList
@@ -309,7 +290,7 @@ Two more measurements from the thesis:
 - **The evaluation is small and measured acceptability, not therapeutic effect.** One patient and
   three speech-language pathologists took part in a single post-use evaluation. The thesis itself
   says the results show technical viability, not clinical effectiveness.
-- **3.8 seconds is slow for conversation.** It avoids the breakdown range, but tips can arrive
+- **3.8 seconds is slow for conversation.** Tips can arrive
   after the moment has passed. The next step is an on-device or edge language model and cached
   voiceprints, which would also remove the dependency on internet access.
 - **Speaker verification was tuned, not formally measured.** I’d record a labelled set of real
@@ -319,7 +300,7 @@ Two more measurements from the thesis:
   enclosure — the reliability complaints came from exactly these areas.
 
 <Figure
-  number={8}
+  number={7}
   src={team}
   alt="The four EarPrompt researchers in business attire after their thesis defense, holding bound manuscripts, the EarPrompt device and a laptop with a congratulations slide."
   caption="The EarPrompt team after the thesis defense."

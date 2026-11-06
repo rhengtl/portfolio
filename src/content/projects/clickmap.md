@@ -9,6 +9,7 @@ order: 6
 status: released
 scope: Solo
 role: Sole developer
+limitation: Local Windows input utility; saved screen positions depend on the display and application layout.
 timeline:
   start: 2026-06-01
   end: 2026-09-30

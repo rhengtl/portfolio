@@ -1,17 +1,18 @@
 ---
 title: TindaBot
-tagline: Tells sari-sari store owners what to restock, how much, and what it will cost — offline, in Taglish.
+tagline: An offline-first restock planner with cloud sync and reviewable AI receipt drafts.
 seoTitle: Offline-first assistant for sari-sari stores
-description: 'How I built TindaBot, an offline-first app that plans sari-sari store restocking from an event log, checked by a Python reference model and 456 tests.'
+description: 'Offline-first restock planning with PostgreSQL sync and reviewable Gemini drafts. My architecture, reference-model tests and device validation.'
 summary: >-
   A local-first PWA: every entry is an append-only event on the phone, with optional
   Supabase sync under row-level security and an AI helper that only drafts entries for the owner to
   confirm. Rules are checked against an independent Python model.
 tier: flagship
-order: 3
+order: 2
 status: live
 scope: Solo
-role: Sole developer
+role: Sole developer — domain rules, React app, AI proxy, PostgreSQL sync and device validation
+limitation: Personal project validated with automated tests and device checks; restock recommendations and business outcomes have not been evaluated with store owners.
 period: May – Oct 2026
 timeline:
   start: 2026-05-01
@@ -20,7 +21,7 @@ stack: [TypeScript, React, PostgreSQL, IndexedDB, Gemini API]
 metrics:
   - label: Automated tests
     value: '456'
-    context: including 25 against a real Supabase project
+    context: documented suite; online checks need a test Supabase project
   - label: Faster recompute
     value: 8×
     context: 383 → 46 ms on two years of data (desktop)
@@ -43,7 +44,7 @@ tldr:
     optional sales taps) into a shopping list with quantities, a cash estimate and a one-line “why”
     for every number. Cloud backup and an AI helper are optional.
   result: >-
-    Live at tindabot.rhengtl.tech, built and validated solo: 456 automated tests, with the business rules checked
+    Live at tindabot.rhengtl.tech, built and validated solo: the October 2026 suite contains 456 tests, with the business rules checked
     against an independent Python model. On two years of data, the full recompute runs up to 8× faster in
     desktop benchmarks, and on a budget phone (realme C55) start-up fell from 3.3 s to 2.0 s.
 ---
@@ -62,7 +63,7 @@ phone, and I built it alone, from the specification to the device testing.
 A <span lang="tl">_sari-sari_</span> store is a neighbourhood shop, usually run from a home. Before each trip to the
 supplier, the owner has to answer four questions: <span lang="tl">_ano ang bibilhin, ilan, kailan, at magkano ang
 dadalhin_</span> — what to buy, how many, when, and how much money to bring. Today that’s done from memory
-and a notebook, so items run out before payday and cash runs short at the supplier.
+and a notebook, TindaBot is designed to help with that planning; its usefulness has not yet been measured in a store-owner study.
 
 The constraints shaped every decision:
 
@@ -209,7 +210,7 @@ storage, with an error that says what to check and a working _Try again_.
   ]}
 />
 
-- **456 automated tests**: 431 that run offline — the business rules against the Python reference
+- **456 tests in the documented October 2026 suite** (not a fresh online test run): 431 that run offline — the business rules against the Python reference
   values, the local database, the sync engine against an in-memory cloud, the AI proxy and drafts,
   and the interface wording — plus 25 that run the sync engine and database policies against a real
   Supabase project with dedicated test users.

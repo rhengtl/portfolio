@@ -30,3 +30,8 @@ resume-research-and-implementation-plan.md
 
 # Lighthouse CI reports
 .lighthouseci/
+
+# Private transformation backups, evidence and local QA (never website assets).
+.transformation-backups/
+.transformation-qa/
+TRANSFORMATION-HANDOVER.md

@@ -16,15 +16,15 @@ export interface SocialLink {
 }
 
 export const site = {
-  name: 'Rhenier Gustilo',
+  name: 'Rhenier R. Gustilo',
   shortName: 'RG',
-  title: 'Software Engineer: Machine Learning & Backend',
+  title: 'Software Engineer | AI Applications & Backend Development',
   /** Used in <title> and social previews. */
-  seoTitle: 'Rhenier Gustilo — Software Engineer (ML & Backend)',
+  seoTitle: 'Rhenier R. Gustilo — Software Engineer | AI & Backend',
   description:
-    'Rhenier Gustilo, software engineer and Computer Engineering graduate building machine-learning systems, backend services and apps end to end.',
+    'Rhenier R. Gustilo builds AI applications, backend APIs and data-driven software. Explore projects, engineering case studies and a resume for full-time roles.',
   mission:
-    'I build complete software, from machine-learning models and LLM features to the backend services, APIs and apps around them, and I test and measure what I ship.',
+    'I build applications that connect AI features to backend services, APIs and reliable data flows. My projects combine LLM integrations, offline-first software and speech processing, with tests and documented evaluation.',
   education: {
     degree: 'BS Computer Engineering',
     specialization: 'Machine Learning specialization',
@@ -34,26 +34,18 @@ export const site = {
     honors: 'President’s Lister',
   },
   availability:
-    'Based in the Philippines · open to on-site roles in the Philippines and remote roles',
-  coreStack: [
-    'Python',
-    'PyTorch',
-    'scikit-learn',
-    'LLM APIs',
-    'FastAPI',
-    'TypeScript',
-    'PostgreSQL',
-  ],
+    'Based in the Philippines · seeking permanent, full-time software engineering roles',
+  coreStack: ['Python', 'LLM APIs', 'FastAPI', 'TypeScript', 'PostgreSQL'],
   email: 'rheniergustilo06@gmail.com',
   github: 'https://github.com/RhenGTL',
   kaggle: 'https://www.kaggle.com/rhengtl',
   /** Set once the owner provides it. Icons render only when set. */
   linkedin: 'https://www.linkedin.com/in/rhengtl/' as string | undefined,
   /** Public path of the résumé PDF; the button renders only if the file exists (§27.1). */
-  resumePath: '/Rhenier-Gustilo-Resume.pdf',
+  resumePath: '/Rhenier-Gustilo-Resume-AI-Applications-Backend.pdf',
   /** Public repo of this site; the footer "view source" link renders only when set. */
   sourceRepo: 'https://github.com/rhengtl/portfolio' as string | undefined,
-  lastUpdated: '2026-10',
+  lastUpdated: '2026-11',
 } as const;
 
 export const nav: NavItem[] = [
@@ -88,14 +80,14 @@ export interface ExperienceEntry {
 }
 
 export const experienceIntro =
-  'Before building software full-time, I deployed and supported real systems in hospitals, government buildings and offices.';
+  'My internships developed practical habits in troubleshooting, systems deployment, documentation and handover that I bring to software projects.';
 
 export const experience: ExperienceEntry[] = [
   {
     role: 'IT & Security Systems Intern',
     org: 'WJS Inc.',
     orgNote: 'Webtek Advanced Technology and Security Solution',
-    period: '2025',
+    period: 'Jul–Sep 2025',
     bullets: [
       'Deployed and commissioned integrated security and building systems (CCTV, fire detection and alarm, public address, biometric access, LED walls and digital kiosks) for hospitals, government buildings and event venues.',
       'Set up and troubleshot the network infrastructure behind them: LAN cable testing and termination, port addressing, and switch/router fault isolation.',
@@ -105,7 +97,7 @@ export const experience: ExperienceEntry[] = [
   {
     role: 'Technical Support Intern',
     org: 'RVCom Computer Trading',
-    period: '2024',
+    period: 'Jul–Sep 2024',
     bullets: [
       'Resolved hardware and software issues for 20+ clients a week using a systematic, step-by-step troubleshooting process.',
       'Kept structured service logs to track recurring issues and improve turnaround.',
@@ -114,7 +106,7 @@ export const experience: ExperienceEntry[] = [
   {
     role: 'Web Design Intern (Work Immersion)',
     org: 'DOST – Philippine Nuclear Research Institute',
-    period: '2022',
+    period: 'Mar–Apr 2022',
     bullets: [
       'Redesigned UI components of government web applications to improve accessibility.',
       'Tested and debugged UI/UX issues before deployment.',
@@ -134,117 +126,67 @@ export interface SkillGroup {
 
 export const skillGroups: SkillGroup[] = [
   {
-    title: 'Machine learning & AI',
+    title: 'AI application integration',
     items: [
-      'PyTorch (speech models)',
-      'scikit-learn',
-      'OpenCV',
-      'TensorFlow / Keras',
-      'NumPy · pandas',
-      'SpeechBrain speaker verification',
-      'Silero VAD',
-      'Praat / Parselmouth',
-      'ONNX Runtime Web',
-      'Tesseract · ML Kit OCR',
-      'LLM APIs (OpenAI, Gemini)',
-      'Prompt design & output guardrails',
+      'OpenAI & Gemini APIs',
+      'Structured drafts, output checks & fallbacks',
+      'Speech-to-text & streaming text-to-speech',
+      'Pretrained OCR, VAD & speaker verification',
     ],
-    usedIn: ['earprompt', 'contex', 'tindabot', 'tomatosense', 'textsnip'],
+    usedIn: ['contex', 'tindabot', 'earprompt'],
+    note: 'Integrated pretrained models and APIs; these projects do not train their underlying speech or language models.',
   },
   {
-    title: 'Backend & APIs',
+    title: 'Backend services & APIs',
     items: [
-      'FastAPI',
-      'Flask',
-      'REST API design',
-      'WebSockets & streaming',
-      'Cloudflare Workers, Durable Objects, KV',
-      'Vercel serverless functions',
-      'Auth: Firebase Auth, Google OAuth, JWT/RS256',
-      'Rate limiting',
+      'Python · FastAPI · Flask',
+      'JavaScript / TypeScript · Cloudflare Workers',
+      'REST APIs · WebSockets · streaming',
+      'Authentication, rate limits & request validation',
     ],
-    usedIn: ['contex', 'earprompt', 'tindabot', 'tomatosense'],
+    usedIn: ['contex', 'tindabot', 'earprompt', 'tomatosense'],
   },
   {
-    title: 'Data & storage',
+    title: 'Databases & offline data',
     items: [
-      'PostgreSQL with Row Level Security (Supabase)',
-      'SQL',
-      'Firestore & security rules',
-      'IndexedDB (Dexie)',
-      'Event-sourced data models',
+      'SQL · PostgreSQL / Supabase',
+      'Row-level security & database migrations',
+      'IndexedDB / Dexie · event logs & sync',
+      'Firebase Auth · Firestore',
     ],
     usedIn: ['tindabot', 'contex', 'earprompt'],
   },
   {
-    title: 'Languages',
+    title: 'Testing & delivery',
     items: [
-      'Python',
-      'TypeScript',
-      'JavaScript',
-      'SQL',
-      'Dart',
-      'C#',
-      'Kotlin',
-      'C++',
-      'R',
-      'Verilog HDL',
-    ],
-  },
-  {
-    title: 'Frontend & mobile',
-    items: [
-      'React · Vite · Zustand',
-      'Progressive web apps',
-      'Flutter',
-      'Android (MediaProjection, overlays)',
-      'WPF / .NET',
-      'WebAssembly integration',
-      'HTML/CSS',
-    ],
-    usedIn: ['tindabot', 'earprompt', 'textsnip', 'clickmap', 'contex'],
-  },
-  {
-    title: 'DevOps & quality',
-    items: [
-      'Git · GitHub Actions CI/CD',
-      'Vitest · Playwright',
-      'Python unit tests',
-      'Linux',
-      'Docker',
-      'Vercel · Render · Cloudflare · Firebase',
-      'Specs, architecture docs, validation logs',
+      'Vitest · Playwright · Python reference tests',
+      'Git · GitHub Actions',
+      'Cloudflare · Vercel · Render',
+      'Failure testing, device checks & validation logs',
     ],
     usedIn: ['contex', 'tindabot', 'tomatosense'],
+    note: 'I use AI coding tools with code review, automated tests and device checks.',
   },
   {
-    title: 'AI-assisted development',
-    items: ['Claude Code (Anthropic)', 'Reviewing and testing AI-generated code'],
-    usedIn: ['earprompt', 'contex', 'tindabot', 'tomatosense', 'textsnip', 'clickmap'],
-    note: 'AI output is a draft; tests and device checks decide what ships. Testing ConTeX on mobile data, I found PDF previews timing out on slow links; the root-cause fix shipped with a new compile test suite.',
-  },
-  {
-    title: 'Embedded & hardware',
-    items: ['Raspberry Pi 5 (GPIO, I²C sensors, audio I/O)', 'Arduino / ESP', 'Verilog HDL'],
-    usedIn: ['earprompt'],
-  },
-  {
-    title: 'Networking & systems',
+    title: 'Application development',
     items: [
-      'Switching, routing & wireless fundamentals',
-      'LAN cabling & testing',
-      'IP / port addressing',
-      'Cisco Packet Tracer',
-      'Security & building systems deployment',
+      'React · TypeScript · progressive web apps',
+      'Flutter / Dart · Kotlin / Android',
+      'WebAssembly integration',
+      'C# · WPF · Win32 input APIs',
     ],
-    note: 'From internships and Cisco Networking Academy',
-    secondary: true,
+    usedIn: ['tindabot', 'contex', 'earprompt', 'textsnip', 'clickmap'],
   },
   {
-    title: 'Design & documentation',
-    items: ['AutoCAD', 'Adobe Photoshop', 'Technical documentation'],
-    note: 'From internships',
-    secondary: true,
+    title: 'Applied machine learning',
+    items: [
+      'scikit-learn · OpenCV · NumPy',
+      'PCA · SVM training & kernel comparison',
+      'Evaluation splits, confusion matrices & per-class metrics',
+      'PyTorch inference · ONNX Runtime Web',
+    ],
+    usedIn: ['tomatosense', 'contex', 'earprompt'],
+    note: 'Trained the TomatoSense classifier. In ConTeX and EarPrompt, adapted or integrated pretrained models.',
   },
 ];
 
@@ -328,5 +270,5 @@ export const activities = [
 ];
 
 export const contact = {
-  lead: 'I’m looking for software engineering, machine learning and backend roles, in the Philippines or remote. Email is the fastest way to reach me.',
+  lead: 'I’m seeking permanent, full-time software engineering opportunities focused on AI applications and backend development. Contact me about a role or to discuss the engineering behind a project. Email is the fastest way to reach me.',
 };

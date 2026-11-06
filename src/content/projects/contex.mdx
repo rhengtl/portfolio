@@ -1,17 +1,18 @@
 ---
 title: ConTeX
-tagline: Photograph handwriting or upload a PDF and get LaTeX back, compiled and previewed in your browser.
+tagline: AI-assisted handwriting and PDF-to-LaTeX conversion, with a browser-compiled preview.
 seoTitle: Handwriting to LaTeX at the edge
 description: 'How I rebuilt ConTeX on Cloudflare’s edge: a Worker that owns the Gemini prompt, LaTeX compiled in the browser, and an offline fallback matching Python.'
 summary: >-
-  A Cloudflare Worker owns the Gemini prompt; if the AI is unavailable, OCR and an ONNX formula
-  recognizer run in the browser instead. LaTeX compiles client-side with pdfTeX in WebAssembly.
-  Ported from Flask to the edge with byte-identical output.
+  For students working with mathematical notes: a Worker manages Gemini requests, sessions and
+  conversion history. I rebuilt the Flask app for edge hosting and browser-side compilation,
+  with local OCR fallback and tests for security, failures and output parity.
 tier: flagship
-order: 2
+order: 1
 status: live
 scope: Team of 4
-role: Lead developer — edge port, security audit, test suites, CI/CD
+role: Lead developer — rebuilt the edge API, browser pipeline, security checks and CI/CD
+limitation: Converts page images and PDFs to LaTeX; integrates Gemini and pretrained OCR/formula models. Synthetic fallback benchmarks do not establish handwriting accuracy.
 period: May 2025 – Sep 2026
 timeline:
   start: 2025-05-01
@@ -20,7 +21,7 @@ stack: [JavaScript, Cloudflare Workers, Gemini API, WebAssembly, Firebase]
 metrics:
   - label: Automated checks
     value: '1,015'
-    context: across 9 test suites
+    context: documented Oct 2026 baseline; details in case study
   - label: In-browser LaTeX compile
     value: 34 ms
     context: warm, desktop
@@ -42,9 +43,9 @@ tldr:
     client can’t touch; the browser compiles the LaTeX itself with pdfTeX in WebAssembly, and
     falls back to on-device OCR when the AI is unavailable.
   result: >-
-    Live at contex.rhengtl.tech with 1,015 automated checks across 9 suites, a 34 ms warm
-    in-browser compile, and a pre-launch security audit that closed a prompt-injection hole and a
-    TeX file-read bypass.
+    An edge-hosted conversion app with user-scoped history, local fallback and browser PDF previews.
+    The documented October 2026 baseline includes 1,015 checks and 34 ms warm desktop compilation;
+    security fixes removed a prompt-injection path and blocked TeX file reads.
 ---
 
 import Figure from '../../components/case/Figure.astro';
@@ -56,8 +57,7 @@ import fallbackResult from '../../assets/projects/contex/fallback-result.png';
 ConTeX turns a photographed or scanned page — handwriting, printed text, equations — into LaTeX,
 then compiles it to a PDF preview right in the browser. It began as a team project with the same
 four people as EarPrompt, as a Flask app deployed with Docker. This page is about the version
-that’s live now: I rebuilt it on Cloudflare’s edge in 2026, and every commit to that rebuild, its
-tests and its CI pipeline is mine.
+that’s live now: I rebuilt it on Cloudflare’s edge in 2026, including its API, browser pipeline, tests and CI workflow.
 
 ## The problem
 
@@ -233,7 +233,9 @@ rate-limited, or dies on page three.
   caption="The fallback path, captured during an AI outage: the result says it was converted locally and flags low-confidence lines instead of hiding them."
 />
 
-## Results
+## Verification and results
+
+The numbers below are the repository’s documented October 2026 baseline, not a fresh full-suite run. The current test command also includes newer history and compile suites; the baseline count is not the current suite total.
 
 <MetricTable
   caption="Automated verification"

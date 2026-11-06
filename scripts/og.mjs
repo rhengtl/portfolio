@@ -25,10 +25,10 @@ const asset = async (p, crop) => {
 const cards = [
   {
     file: 'default.png',
-    label: 'Software Engineer · ML & Backend',
-    title: 'Rhenier Gustilo',
-    lead: 'I build complete software, from ML models and LLM features to the backends, APIs and apps around them.',
-    metric: 'Python · PyTorch · LLM APIs · FastAPI · TypeScript · PostgreSQL',
+    label: 'Software Engineer',
+    title: 'Rhenier R. Gustilo',
+    lead: 'AI Applications & Backend Development. APIs, data flows and usable applications, with tests and documented evaluation.',
+    metric: 'Python · TypeScript · LLM APIs · PostgreSQL',
     image: 'src/assets/headshot.jpg',
     portrait: true,
   },
@@ -37,7 +37,7 @@ const cards = [
     label: 'Thesis prototype · Team of 4 · 2025–⁠26',
     title: 'EarPrompt',
     lead: 'A wearable that listens to a conversation and whispers one short tip on how to respond.',
-    metric: '3.8 s average end-to-end latency',
+    metric: 'Thesis prototype · 3-session latency evaluation',
     image: 'src/assets/projects/earprompt/cover.jpg',
   },
   {
@@ -45,7 +45,7 @@ const cards = [
     label: 'Live · Team of 4 · 2025–⁠26',
     title: 'ConTeX',
     lead: 'Photograph handwriting or drop in a PDF and get LaTeX back, compiled in your browser.',
-    metric: '1,015 automated checks',
+    metric: 'AI API · browser LaTeX · local fallback',
     image: 'src/assets/projects/contex/cover.png',
     crop: { left: 220, top: 150, width: 1480, height: 925 },
   },
@@ -54,7 +54,7 @@ const cards = [
     label: 'Live · Solo · 2026',
     title: 'TindaBot',
     lead: 'Tells sari-sari store owners what to buy, how many, and how much money to bring.',
-    metric: '456 tests · 8× faster recompute (desktop)',
+    metric: 'Offline event log · PostgreSQL sync · AI drafts',
     image: 'src/assets/projects/tindabot/cover.png',
     crop: { left: 418, top: 54, width: 1084, height: 678 },
   },
@@ -66,7 +66,7 @@ ${fontFaces}
 body{width:1200px;height:630px;background:#fafaf7;color:#17181a;font-family:"IBM Plex Sans";
   display:grid;grid-template-columns:1fr ${c.portrait ? '360px' : '470px'};gap:56px;align-items:center;
   padding:64px 72px;border-top:10px solid #c2410c;position:relative}
-.label{font-family:"IBM Plex Mono";font-weight:500;font-size:20px;white-space:nowrap;letter-spacing:.06em;text-transform:uppercase;color:#c2410c}
+.label{font-family:"IBM Plex Mono";font-weight:500;font-size:20px;letter-spacing:.06em;text-transform:uppercase;color:#c2410c}
 h1{font-size:${c.title.length > 12 ? 64 : 76}px;line-height:1.05;font-weight:600;letter-spacing:-.02em;margin:22px 0 20px}
 p{font-size:29px;line-height:1.4;color:#4a4f57}
 .metric{margin-top:30px;font-family:"IBM Plex Mono";font-size:22px;font-weight:500;color:#17181a;

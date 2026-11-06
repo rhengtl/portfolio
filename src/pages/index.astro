@@ -36,6 +36,10 @@ const personJsonLd = {
   <Hero />
 
   <Section id="projects" label="Selected work" title="Projects" class="projects-section">
+    <p class="projects-intro">
+      Three projects showing how I connect AI features to APIs, data and usable applications. Each
+      case study explains my contribution, engineering decisions and evaluation limits.
+    </p>
     <div class="flagships">
       {flagships.map((project) => (
         <ProjectFlagship project={project} />
@@ -67,6 +71,11 @@ const personJsonLd = {
 </BaseLayout>
 
 <style>
+  .projects-intro {
+    max-width: var(--measure);
+    color: var(--muted);
+    margin-bottom: var(--space-6);
+  }
   /* The first section after the hero starts closer so the first project is visible sooner. */
   :global(section.section.projects-section) {
     padding-top: var(--space-7);

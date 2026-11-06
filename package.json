@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Portfolio of Rhenier Gustilo, software engineer (machine learning and backend). Live at https://rhengtl.tech.",
+  "description": "Portfolio of Rhenier R. Gustilo, software engineer (AI applications and backend development). Live at https://rhengtl.tech.",
   "engines": {
     "node": ">=22.12.0"
   },

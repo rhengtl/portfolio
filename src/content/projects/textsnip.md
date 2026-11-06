@@ -9,6 +9,7 @@ order: 5
 status: released
 scope: Solo
 role: Sole developer
+limitation: Android-only utility integrating pretrained ML Kit Latin-script OCR; recognition accuracy was not independently benchmarked.
 timeline:
   start: 2026-06-01
   end: 2026-09-30
