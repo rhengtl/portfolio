@@ -21,5 +21,4 @@ metrics:
 links:
   repo: https://github.com/RhenGTL/tomatosense
   live: https://tomato-sense.rhengtl.tech
-liveNote: Free hosting — the first load may take about 30 seconds while the server wakes.
 ---
