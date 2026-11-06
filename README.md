@@ -21,8 +21,7 @@ three largest, plus experience, skills and credentials.
   page is checked with axe-core; automated checks supplement keyboard and visual review.
 - **Secure by default.** A per-page Content-Security-Policy with hashed scripts and styles,
   security headers from `vercel.json`, and no third-party scripts. Analytics are cookieless.
-- **Generated assets.** The social preview images are rendered from code (`scripts/og.mjs`), and
-  the public résumé PDF is generated and checked by script (see below).
+- **Generated assets.** The social preview images are rendered from code (`scripts/og.mjs`).
 
 ## Tech stack
 
@@ -84,16 +83,6 @@ npm run build && node scripts/og.mjs
 ```
 
 The script renders with Microsoft Edge through `playwright-core`.
-
-### Résumé
-
-The primary download is `public/Rhenier-Gustilo-Resume-AI-Applications-Backend.pdf`.
-`public/Rhenier-Gustilo-Resume.pdf` remains an identical copy for existing links. Both public
-copies omit the private phone number. `node scripts/resume-targeted.mjs` generates them after
-the site build, along with separate application and applied-ML copies in `resume/targeted/`.
-Editable JSON content and `resume/targeted.css` remain in the ignored `resume/` folder.
-The original sources, variants and generator scripts are retained separately. Resume generation
-requires those private sources and Microsoft Edge, so it will not run from a fresh public clone.
 
 ## Quality checks
 
